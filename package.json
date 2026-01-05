@@ -1,5 +1,5 @@
 {
-  "name": "4am-visual-studio",
+  "name": "@4amvs/app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
