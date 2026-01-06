@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
 
 const urbanistFont = Urbanist({
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body
         className={`${urbanistFont.variable} antialiased`}
       >
-        {children}
+        <NextIntlClientProvider>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

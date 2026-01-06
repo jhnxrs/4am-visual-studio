@@ -1,4 +1,11 @@
-export default function Page() {
+import { LocaleSwitcher } from "@/components/home/locale-switcher";
+import { getLocale } from "@/lib/get-locale";
+import { getTranslations } from "next-intl/server"
+
+export default async function Page() {
+  const t = await getTranslations('home');
+  const locale = await getLocale();
+
   return (
     <div className="w-screen h-full min-h-screen relative overflow-hidden">
       <video
@@ -18,9 +25,13 @@ export default function Page() {
           className="w-20 md:w-25 filter brightness-0 invert"
         />
 
+        <div className="absolute top-8 right-8 z-21">
+          <LocaleSwitcher locale={locale} />
+        </div>
+
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl md:text-4xl text-white font-light md:font-thin --font-urbanist">Visualizing spaces before they exist.</h2>
-          <p className="text-sm md:text-base text-white/60 font-normal md:font-light max-w-xl">High-end architectural visualization crafted with creativity and technical excellence. Designed to elevate projects and communicate their true potential.</p>
+          <h2 className="text-3xl md:text-4xl text-white font-light md:font-thin --font-urbanist">{t('hero.title')}</h2>
+          <p className="text-sm md:text-base text-white/60 font-normal md:font-light max-w-xl">{t('hero.caption')}</p>
         </div>
 
         <div className="hidden md:block absolute bottom-8 right-8 fill-white/20 animate-bounce">
