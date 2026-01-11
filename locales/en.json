@@ -1,8 +1,41 @@
 {
-    "home": {
-        "hero": {
-            "title": "Visualizing spaces before they exist.",
-            "caption": "High-end architectural visualization crafted with creativity and technical excellence. Designed to elevate projects and communicate their true potential."
-        }
+    "getInTouch": {
+        "sectionTitle": "GET IN TOUCH",
+        "sectionText": "Let’s collaborate to turn your vision into a compelling visual narrative that resonates, inspires, and stands out.",
+        "enquiries": "Enquiries",
+        "talk": "Talk"
+    },
+    "intro": {
+        "sectionTitle": "INTRO",
+        "sectionText": "4AM is an architectural visualization studio that transforms ambitious projects into refined visual experiences, combining elegance, creativity, and technical precision through a multidisciplinary team driven by innovation and excellence.",
+        "heroTitle": "Visualizing spaces before they exist.",
+        "heroText": "High-end architectural visualization crafted with creativity and technical excellence. Designed to elevate projects and communicate their true potential."
+    },
+    "services": {
+        "sectionTitle": "SERVICES",
+        "sectionText": "Our services merge design intelligence, technical expertise, and visual storytelling to deliver impactful, high-end architectural experiences.",
+        "cards": [
+            {
+                "title": "Property Branding",
+                "description": "We craft cohesive visual identities for real estate developments, aligning architecture, branding, and narrative to strengthen market presence and emotional connection."
+            },
+            {
+                "title": "Design Consulting",
+                "description": "We provide strategic design guidance throughout the creative process, helping refine concepts, enhance aesthetics, and ensure clarity, consistency, and purpose."
+            },
+            {
+                "title": "Architectural Visualization",
+                "description": "We create highly realistic images, films, and immersive experiences that communicate space, atmosphere, and emotion with precision and visual impact."
+            },
+            {
+                "title": "Media",
+                "description": "We develop tailored visual content for digital platforms, transforming architectural projects into engaging media assets designed to captivate and communicate."
+            }
+        ]
+    },
+    "work": {
+        "sectionTitle": "OUR WORK",
+        "sectionText": "RECENT PROJECTS",
+        "caption": "From concept to final frame, we translate ideas into powerful visual experiences that elevate projects and define identities."
     }
 }

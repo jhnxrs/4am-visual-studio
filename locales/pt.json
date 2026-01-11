@@ -1,8 +1,41 @@
 {
-    "home": {
-        "hero": {
-            "title": "Visualizando espaços antes de existirem.",
-            "caption": "Visualização arquitetônica de alto nível, criada com criatividade e excelência técnica. Desenvolvida para valorizar projetos e comunicar seu verdadeiro potencial."
-        }
+    "getInTouch": {
+        "sectionTitle": "FALE CONOSCO",
+        "sectionText": "Vamos colaborar para transformar sua visão em uma narrativa visual envolvente, que impacta, inspira e se destaca.",
+        "enquiries": "Orçamentos",
+        "talk": "Fale com a gente"
+    },
+    "intro": {
+        "sectionTitle": "INTRODUÇÃO",
+        "sectionText": "A 4AM é um estúdio de visualização arquitetônica que transforma projetos ambiciosos em experiências visuais refinadas, combinando elegância, criatividade e precisão técnica por meio de uma equipe multidisciplinar movida pela inovação e excelência.",
+        "heroTitle": "Visualizando espaços antes de existirem.",
+        "heroText": "Visualização arquitetônica de alto padrão, criada com criatividade e excelência técnica. Desenvolvida para valorizar projetos e comunicar todo o seu potencial."
+    },
+    "services": {
+        "sectionTitle": "SERVIÇOS",
+        "sectionText": "Nossos serviços unem inteligência de design, expertise técnica e narrativa visual para entregar experiências arquitetônicas impactantes e de alto nível.",
+        "cards": [
+            {
+                "title": "Branding Imobiliário",
+                "description": "Criamos identidades visuais coesas para empreendimentos imobiliários, alinhando arquitetura, marca e narrativa para fortalecer a presença no mercado e a conexão emocional."
+            },
+            {
+                "title": "Consultoria em Design",
+                "description": "Oferecemos orientação estratégica ao longo de todo o processo criativo, refinando conceitos, aprimorando a estética e garantindo clareza, consistência e propósito."
+            },
+            {
+                "title": "Visualização Arquitetônica",
+                "description": "Produzimos imagens, filmes e experiências imersivas altamente realistas, que comunicam espaço, atmosfera e emoção com precisão e impacto visual."
+            },
+            {
+                "title": "Mídia",
+                "description": "Desenvolvemos conteúdos visuais sob medida para plataformas digitais, transformando projetos arquitetônicos em ativos de mídia envolventes e estratégicos."
+            }
+        ]
+    },
+    "work": {
+        "sectionTitle": "NOSSO TRABALHO",
+        "sectionText": "PROJETOS RECENTES",
+        "caption": "Do conceito ao frame final, traduzimos ideias em experiências visuais poderosas que elevam projetos e definem identidades."
     }
 }

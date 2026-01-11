@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
+import { Providers } from "@/providers";
 
 const urbanistFont = Urbanist({
   variable: "--font-urbanist",
@@ -23,9 +23,9 @@ export default function RootLayout({
       <body
         className={`${urbanistFont.variable} antialiased`}
       >
-        <NextIntlClientProvider>
+        <Providers>
           {children}
-        </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );
