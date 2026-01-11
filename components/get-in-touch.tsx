@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
+import { useApplicationState } from "@/providers/application-state";
 
 export const GetInTouch = () => {
     const t = useTranslations('getInTouch');
@@ -12,6 +13,7 @@ export const GetInTouch = () => {
     const wordsRef = useRef<HTMLDivElement>(null);
     const contactRef = useRef<HTMLDivElement>(null);
 
+    const { isMobile } = useApplicationState();
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
@@ -21,7 +23,7 @@ export const GetInTouch = () => {
             scrollTrigger: {
                 trigger: document.querySelector('#touch'),
                 start: "top 70%",
-                end: "bottom bottom",
+                end: isMobile ? "40% 60%" : "bottom bottom",
                 scrub: true,
             },
         });
@@ -39,7 +41,7 @@ export const GetInTouch = () => {
                 stagger: 0.08,
             }
         );
-    }, []);
+    }, [isMobile]);
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
@@ -83,7 +85,7 @@ export const GetInTouch = () => {
                 },
             }
         );
-    }, []);
+    }, [isMobile]);
 
     return (
         <section id="touch" className="w-screen pt-32 pb-48 bg-white px-12 relative z-20">
@@ -93,20 +95,20 @@ export const GetInTouch = () => {
                     const isFirstWord = index === 0;
 
                     return (
-                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
+                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
                     )
                 })}
             </div>
             <div
                 ref={contactRef}
-                className="flex flex-row items-center gap-6 mt-6"
+                className="flex flex-col md:flex-row md:items-center gap-6 mt-6"
             >
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
                     <p className="text-black/60 font-light">{t('enquiries')}</p>
                     <p className="font-medium">orcamento@4amvisualstudio.com.br</p>
                 </div>
 
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
                     <p className="text-black/60 font-light">{t('talk')}</p>
                     <p className="font-medium">+55 51 991691225</p>
                 </div>

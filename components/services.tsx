@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useApplicationState } from "@/providers/application-state";
 
 export const Services = () => {
     const t = useTranslations('services');
@@ -16,6 +17,7 @@ export const Services = () => {
         if (el) cardsRef.current[index] = el;
     };
 
+    const { isMobile } = useApplicationState();
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
@@ -25,7 +27,7 @@ export const Services = () => {
             scrollTrigger: {
                 trigger: document.querySelector('#services'),
                 start: "top 60%",
-                end: "60% 90%",
+                end: isMobile ? '+=200' : '+=400',
                 scrub: true,
             },
         });
@@ -43,7 +45,7 @@ export const Services = () => {
                 stagger: 0.08,
             }
         );
-    }, []);
+    }, [isMobile]);
 
     useGSAP(() => {
         const cards = cardsRef.current;
@@ -62,13 +64,13 @@ export const Services = () => {
                 stagger: 0.25,
                 scrollTrigger: {
                     trigger: cards[0].parentElement,
-                    start: "top 60%",
+                    start: isMobile ? "top 40%" : "top 60%",
                     end: "bottom 90%",
                     scrub: true,
                 },
             }
         );
-    }, []);
+    }, [isMobile]);
 
     return (
         <section id="services" className="w-screen py-32 px-12 relative bg-white z-20 flex flex-col gap-12">
@@ -78,11 +80,11 @@ export const Services = () => {
                     const isFirstWord = index === 0;
 
                     return (
-                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
+                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
                     )
                 })}
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                 <div
                     className="w-full flex flex-col gap-3"
                     ref={(el) => setCardRef(el, 0)}

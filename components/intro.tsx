@@ -4,12 +4,14 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
+import { useApplicationState } from "@/providers/application-state";
 
 export const Intro = () => {
     const t = useTranslations('intro');
     const text = t('sectionText');
 
     const wordsRef = useRef<HTMLDivElement>(null);
+    const { isMobile } = useApplicationState();
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
@@ -19,7 +21,7 @@ export const Intro = () => {
             scrollTrigger: {
                 trigger: document.querySelector('#intro'),
                 start: "top 60%",
-                end: "bottom 80%",
+                end: isMobile ? "+=200" : "+=400",
                 scrub: true,
             },
         });
@@ -37,11 +39,11 @@ export const Intro = () => {
                 stagger: 0.08,
             }
         );
-    }, []);
+    }, [isMobile]);
 
     return (
         <section id="intro" className="w-screen py-48 px-12 relative bg-white z-20">
-            <div id="intro-upper-text" className="-top-30 absolute px-6 z-20 w-full left-1/2 transform -translate-x-1/2">
+            <div id="intro-upper-text" className="-top-48 md:-top-30 absolute px-6 z-20 flex flex-col gap-2 md:gap-1 w-full left-1/2 transform -translate-x-1/2">
                 <h2 className="text-3xl md:text-4xl font-light text-white">
                     {t("heroTitle")}
                 </h2>
@@ -56,7 +58,7 @@ export const Intro = () => {
                     const isFirstWord = index === 0;
 
                     return (
-                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
+                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
                     )
                 })}
             </div>

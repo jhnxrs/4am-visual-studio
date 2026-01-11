@@ -1,14 +1,14 @@
 "use client"
 
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { useDarkNavbar } from "@/providers/dark-navbar";
+import { useApplicationState } from "@/providers/application-state";
 
 type Props = {
     locale: 'pt' | 'en';
 }
 
 export const Navbar = (props: Props) => {
-    const { dark } = useDarkNavbar();
+    const { dark } = useApplicationState();
     const { locale } = props;
 
     return (

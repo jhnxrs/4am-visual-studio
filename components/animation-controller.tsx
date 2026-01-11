@@ -3,14 +3,14 @@
 import gsap from 'gsap';
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useDarkNavbar } from '@/providers/dark-navbar';
+import { useApplicationState } from '@/providers/application-state';
 
 type Props = {
     children: React.ReactNode;
 }
 
 export const AnimationController = (props: Props) => {
-    const { setDark } = useDarkNavbar();
+    const { setDark } = useApplicationState();
 
     useGSAP(() => {
         const hero = document.querySelector("#hero");

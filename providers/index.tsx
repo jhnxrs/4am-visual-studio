@@ -1,4 +1,4 @@
-import { DarkNavbarProvider } from "@/providers/dark-navbar";
+import { ApplicationStateProvider } from "@/providers/application-state";
 import { SmoothScroll } from "@/providers/smooth-scroll";
 import { NextIntlClientProvider } from "next-intl";
 
@@ -10,9 +10,9 @@ export const Providers = (props: Props) => {
     return (
         <SmoothScroll>
             <NextIntlClientProvider>
-                <DarkNavbarProvider>
+                <ApplicationStateProvider>
                     {props.children}
-                </DarkNavbarProvider>
+                </ApplicationStateProvider>
             </NextIntlClientProvider>
         </SmoothScroll>
     )
