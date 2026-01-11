@@ -72,7 +72,7 @@ export const AnimationController = (props: Props) => {
     });
 
     return (
-        <div className='w-full h-dvh'>
+        <div className='w-full h-full min-h-svh'>
             {props.children}
         </div>
     )
