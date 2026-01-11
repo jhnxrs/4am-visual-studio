@@ -71,5 +71,9 @@ export const AnimationController = (props: Props) => {
         });
     });
 
-    return props.children;
+    return (
+        <div className='w-full h-dvh'>
+            {props.children}
+        </div>
+    )
 }

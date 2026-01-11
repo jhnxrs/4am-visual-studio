@@ -4,7 +4,6 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
-import { useApplicationState } from "@/providers/application-state";
 
 export const GetInTouch = () => {
     const t = useTranslations('getInTouch');
@@ -13,79 +12,63 @@ export const GetInTouch = () => {
     const wordsRef = useRef<HTMLDivElement>(null);
     const contactRef = useRef<HTMLDivElement>(null);
 
-    const { isMobile } = useApplicationState();
-
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
         if (!words) return;
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: document.querySelector('#touch'),
-                start: "top 70%",
-                end: isMobile ? "40% 60%" : "bottom bottom",
-                scrub: true,
-            },
-        });
+        gsap.set(words, { y: 40, opacity: 0 });
+        gsap.set(contactRef.current, { y: 20, opacity: 0 });
 
-        tl.fromTo(
-            words,
+        const mm = gsap.matchMedia();
+
+        mm.add(
             {
-                y: 40,
-                opacity: 0,
+                mobile: "(max-width: 767px)",
+                desktop: "(min-width: 768px)",
             },
-            {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                stagger: 0.08,
+            (context) => {
+                const { mobile } = context.conditions!;
+
+                gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#touch",
+                        start: "top 70%",
+                        end: mobile ? "40% 60%" : "bottom bottom",
+                        scrub: true,
+                        invalidateOnRefresh: true,
+                    },
+                }).fromTo(
+                    words,
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        stagger: 0.08,
+                    }
+                );
+
+                gsap.fromTo(
+                    contactRef.current,
+                    { y: 20, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: contactRef.current,
+                            start: "top 85%",
+                            end: "top 60%",
+                            scrub: true,
+                            invalidateOnRefresh: true,
+                        },
+                    }
+                );
             }
         );
-    }, [isMobile]);
 
-    useGSAP(() => {
-        const words = wordsRef.current?.querySelectorAll("span");
-        if (!words) return;
-
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: "#touch",
-                start: "top 70%",
-                end: "bottom bottom",
-                scrub: true,
-            },
-        });
-
-        tl.fromTo(
-            words,
-            { y: 40, opacity: 0 },
-            {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                stagger: 0.08,
-            }
-        );
-
-        gsap.fromTo(
-            contactRef.current,
-            {
-                y: 20,
-                opacity: 0,
-            },
-            {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: contactRef.current,
-                    start: "top 85%",
-                    end: "top 60%",
-                    scrub: true,
-                },
-            }
-        );
-    }, [isMobile]);
+        return () => mm.revert();
+    }, []);
 
     return (
         <section id="touch" className="w-screen pt-32 pb-48 bg-white px-12 relative z-20">

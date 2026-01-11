@@ -4,7 +4,6 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import { useApplicationState } from "@/providers/application-state";
 
 export const Services = () => {
     const t = useTranslations('services');
@@ -17,60 +16,68 @@ export const Services = () => {
         if (el) cardsRef.current[index] = el;
     };
 
-    const { isMobile } = useApplicationState();
-
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
-        if (!words) return;
-
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: document.querySelector('#services'),
-                start: "top 60%",
-                end: isMobile ? '+=200' : '+=400',
-                scrub: true,
-            },
-        });
-
-        tl.fromTo(
-            words,
-            {
-                y: 40,
-                opacity: 0,
-            },
-            {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                stagger: 0.08,
-            }
-        );
-    }, [isMobile]);
-
-    useGSAP(() => {
         const cards = cardsRef.current;
-        if (!cards.length) return;
 
-        gsap.fromTo(
-            cards,
+        if (!words || !cards?.length) return;
+
+        gsap.set(words, { y: 40, opacity: 0 });
+        gsap.set(cards, { y: 60, opacity: 0 });
+
+        const mm = gsap.matchMedia();
+
+        mm.add(
             {
-                y: 60,
-                opacity: 0,
+                mobile: "(max-width: 767px)",
+                desktop: "(min-width: 768px)",
             },
-            {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                stagger: 0.25,
-                scrollTrigger: {
-                    trigger: cards[0].parentElement,
-                    start: isMobile ? "top 40%" : "top 60%",
-                    end: "bottom 90%",
-                    scrub: true,
-                },
+            (context) => {
+                const { mobile } = context.conditions!;
+
+                // Text animation
+                gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#services",
+                        start: "top 60%",
+                        end: mobile ? "+=200" : "+=400",
+                        scrub: true,
+                        invalidateOnRefresh: true,
+                    },
+                }).fromTo(
+                    words,
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        stagger: 0.08,
+                    }
+                );
+
+                // Cards animation
+                gsap.fromTo(
+                    cards,
+                    { y: 60, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        stagger: 0.25,
+                        scrollTrigger: {
+                            trigger: cards[0].parentElement,
+                            start: mobile ? "top 40%" : "top 60%",
+                            end: "bottom 90%",
+                            scrub: true,
+                            invalidateOnRefresh: true,
+                        },
+                    }
+                );
             }
         );
-    }, [isMobile]);
+
+        return () => mm.revert();
+    }, []);
 
     return (
         <section id="services" className="w-screen py-32 px-12 relative bg-white z-20 flex flex-col gap-12">

@@ -19,7 +19,7 @@ export const LocaleSwitcher = (props: Props) => {
     return (
         <div className="flex flex-row items-center gap-2">
             <button
-                className="tracking-wide text-white data-[dark=true]:text-black text-xs cursor-pointerd data-[active=true]:bg-white/10 data-[dark=true]:data-[active=true]:bg-black/10 data-[active=true]:backdrop-blur-sm px-1.5 py-0.5 rounded-md"
+                className="tracking-wide text-white data-[dark=true]:text-black text-xs cursor-pointer data-[active=true]:bg-white/10 data-[dark=true]:data-[active=true]:bg-black/10 data-[active=true]:backdrop-blur-sm px-1.5 py-0.5 rounded-md"
                 data-active={props.locale === 'pt'}
                 data-dark={props.dark}
                 onClick={() => onLanguageChange('pt')}

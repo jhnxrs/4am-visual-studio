@@ -4,42 +4,52 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
-import { useApplicationState } from "@/providers/application-state";
 
 export const Intro = () => {
     const t = useTranslations('intro');
     const text = t('sectionText');
 
     const wordsRef = useRef<HTMLDivElement>(null);
-    const { isMobile } = useApplicationState();
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
         if (!words) return;
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: document.querySelector('#intro'),
-                start: "top 60%",
-                end: isMobile ? "+=200" : "+=400",
-                scrub: true,
-            },
-        });
+        gsap.set(words, { y: 40, opacity: 0 });
 
-        tl.fromTo(
-            words,
+        const mm = gsap.matchMedia();
+
+        mm.add(
             {
-                y: 40,
-                opacity: 0,
+                mobile: "(max-width: 767px)",
+                desktop: "(min-width: 768px)",
             },
-            {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                stagger: 0.08,
+            (context) => {
+                const { mobile } = context.conditions!;
+
+                gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#intro",
+                        start: "top 60%",
+                        end: mobile ? "+=200" : "+=400",
+                        scrub: true,
+                        invalidateOnRefresh: true,
+                    },
+                }).fromTo(
+                    words,
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        stagger: 0.08,
+                    }
+                );
             }
         );
-    }, [isMobile]);
+
+        return () => mm.revert();
+    }, []);
 
     return (
         <section id="intro" className="w-screen py-48 px-12 relative bg-white z-20">

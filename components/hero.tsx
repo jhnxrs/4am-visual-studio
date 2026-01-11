@@ -1,6 +1,6 @@
 export const Hero = () => {
     return (
-        <main id="hero" className="w-full h-screen">
+        <main id="hero" className="w-full h-dvh">
             <video
                 src="/hero.mp4"
                 muted
@@ -8,7 +8,7 @@ export const Hero = () => {
                 autoPlay
                 loop
                 preload="auto"
-                className="w-full h-screen object-cover object-[25%_75%]"
+                className="w-full h-dvh object-cover object-[25%_75%]"
             />
 
             <div id="hero-overlay" className="absolute inset-0 w-full h-full bg-black/50" />

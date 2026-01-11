@@ -16,6 +16,9 @@ export const Work = () => {
 
         if (!words || !workContent) return;
 
+        gsap.set(words, { y: 40, opacity: 0 });
+        gsap.set(workContent, { y: 60, opacity: 0 });
+
         const titleTl = gsap.timeline({
             scrollTrigger: {
                 trigger: sectionRef.current,
@@ -59,7 +62,7 @@ export const Work = () => {
     return (
         <section ref={sectionRef} className="w-screen py-32 px-12 flex flex-col relative bg-white z-20">
             <div className="relative w-full">
-                <p className="absolute -top-4 md:top-4 left-0 text-black/80 tracking-wide text-xs">02<span className="text-black/40">//</span>{t('sectionTitle')}</p>
+                <p className="absolute -top-4 left-0 text-black/80 tracking-wide text-xs">02<span className="text-black/40">//</span>{t('sectionTitle')}</p>
                 <div className="flex flex-row items-center flex-wrap gap-0 leading-none md:gap-8">
                     {text.split(' ').map((word) => {
                         return (
