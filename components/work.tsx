@@ -14,7 +14,6 @@ export const Work = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        // ===== Title animation =====
         const words = sectionRef.current?.querySelectorAll("span");
 
         if (words) {
@@ -62,7 +61,8 @@ export const Work = () => {
     return (
         <section
             ref={sectionRef}
-            className="w-screen py-32 px-12 flex flex-col relative bg-white z-20"
+            className="w-screen py-32 px-12 flex flex-col relative bg-[#eee] z-20"
+            id="work"
         >
             <div className="relative w-full">
                 <p className="absolute -top-4 left-0 text-black/80 tracking-wide text-xs">
@@ -97,19 +97,31 @@ export const Work = () => {
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5">
-                        <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200" />
-                        <div className="w-full h-80 bg-gray-200" />
+                        <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200">
+                            <img src="/work01.png" className="w-full h-full object-cover object-[20%_80%]" />
+                        </div>
+                        <div className="w-full h-80 bg-gray-200">
+                            <img src="/work02.png" className="w-full h-full object-cover" />
+                        </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5 mt-5">
-                    <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200" />
-                    <div className="w-full h-80 bg-gray-200" />
+                    <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200">
+                        <img src="/work05.png" className="w-full h-full object-cover object-[20%_80%]" />
+                    </div>
+                    <div className="w-full h-80 bg-gray-200">
+                        <img src="/work03.png" className="w-full h-full object-cover" />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5 mt-5">
-                    <div className="w-full h-80 bg-gray-200" />
-                    <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200" />
+                    <div className="w-full h-80 bg-gray-200">
+                        <img src="/work04.png" className="w-full h-full object-cover object-bottom" />
+                    </div>
+                    <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200">
+                        <img src="/work06.png" className="w-full h-full object-cover object-[20%_80%]" />
+                    </div>
                 </div>
             </div>
         </section>

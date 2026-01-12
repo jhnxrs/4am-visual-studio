@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export const Intro = () => {
     const t = useTranslations('intro');
@@ -52,7 +53,20 @@ export const Intro = () => {
     }, []);
 
     useGSAP(() => {
-        gsap.from(document.querySelector('#intro-upper-text'), {
+        const el = document.querySelector('#intro-upper-text');
+        if (!el) return;
+
+        const intro = el.closest('#intro');
+        if (!intro) return;
+
+        const shouldShow = !ScrollTrigger.isInViewport(intro, 0.3);
+
+        if (!shouldShow) {
+            gsap.set(el, { opacity: 0 });
+            return;
+        }
+
+        gsap.from(el, {
             opacity: 0,
             duration: 1.5,
             ease: "power2.out",
@@ -60,7 +74,7 @@ export const Intro = () => {
     }, []);
 
     return (
-        <section id="intro" className="w-screen py-48 px-12 relative bg-white z-20">
+        <section id="intro" className="w-screen py-48 px-12 relative bg-[#eee] z-20">
             <div id="intro-upper-text" className="-top-48 md:-top-30 absolute px-6 z-20 flex flex-col gap-2 md:gap-1 w-full left-1/2 transform -translate-x-1/2">
                 <h2 className="text-3xl md:text-4xl font-light text-white">
                     {t("heroTitle")}

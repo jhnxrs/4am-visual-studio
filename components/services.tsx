@@ -35,7 +35,6 @@ export const Services = () => {
             (context) => {
                 const { mobile } = context.conditions!;
 
-                // Text animation
                 gsap.timeline({
                     scrollTrigger: {
                         trigger: "#services",
@@ -55,7 +54,6 @@ export const Services = () => {
                     }
                 );
 
-                // Cards animation
                 gsap.fromTo(
                     cards,
                     { y: 60, opacity: 0 },
@@ -80,7 +78,7 @@ export const Services = () => {
     }, []);
 
     return (
-        <section id="services" className="w-screen py-32 px-12 relative bg-white z-20 flex flex-col gap-12">
+        <section id="services" className="w-screen py-32 px-12 relative bg-[#eee] z-20 flex flex-col gap-12">
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
                 <p className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">03<span className="text-black/40">//</span>{t('sectionTitle')}</p>
                 {text.split(' ').map((word, index) => {
@@ -97,7 +95,7 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 0)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.0.title')}</h2>
-                    <div className="w-full h-80 bg-gray-200" />
+                    <div className="w-full h-80 bg-gray-400" />
                     <p className="text-sm text-black/80">{t('cards.0.description')}</p>
                 </div>
                 <div
@@ -105,7 +103,7 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 1)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.1.title')}</h2>
-                    <div className="w-full h-80 bg-gray-200" />
+                    <div className="w-full h-80 bg-gray-400" />
                     <p className="text-sm text-black/80">{t('cards.1.description')}</p>
                 </div>
                 <div
@@ -113,7 +111,7 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 2)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.2.title')}</h2>
-                    <div className="w-full h-80 bg-gray-200" />
+                    <div className="w-full h-80 bg-gray-400" />
                     <p className="text-sm text-black/80">{t('cards.2.description')}</p>
                 </div>
                 <div
@@ -121,7 +119,7 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 3)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.3.title')}</h2>
-                    <div className="w-full h-80 bg-gray-200" />
+                    <div className="w-full h-80 bg-gray-400" />
                     <p className="text-sm text-black/80">{t('cards.3.description')}</p>
                 </div>
             </div>

@@ -55,7 +55,6 @@ export const Approach = () => {
 
     }, [])
 
-    // ─── VIDEO SCRUB PLAYBACK ────────────────────────────
     useEffect(() => {
         const video = videoRef.current
         if (!video) return
@@ -133,7 +132,7 @@ export const Approach = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative h-[350vh]">
+        <section ref={sectionRef} className="relative h-[350vh]" id="approach">
             <div className="sticky top-0 h-screen w-screen overflow-hidden">
                 <video
                     ref={videoRef}

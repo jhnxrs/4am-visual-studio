@@ -35,7 +35,7 @@ export const AnimationController = (props: Props) => {
                 setDark(true);
 
                 gsap.to(heroOverlay, {
-                    backgroundColor: "rgba(255,255,255,1)",
+                    backgroundColor: "#eee",
                     duration: 0.4,
                     ease: "power2.out",
                 });
@@ -54,16 +54,9 @@ export const AnimationController = (props: Props) => {
         ScrollTrigger.create({
             trigger: intro,
             start: "top 70%",
-            onEnter: () => {
+            onToggle: (self) => {
                 gsap.to(introUpperText, {
-                    opacity: 0,
-                    duration: 0.4,
-                    ease: "power2.out",
-                });
-            },
-            onLeaveBack: () => {
-                gsap.to(introUpperText, {
-                    opacity: 1,
+                    opacity: self.isActive ? 0 : 1,
                     duration: 0.4,
                     ease: "power2.out",
                 });

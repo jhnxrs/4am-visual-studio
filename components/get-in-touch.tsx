@@ -31,7 +31,7 @@ export const GetInTouch = () => {
 
                 gsap.timeline({
                     scrollTrigger: {
-                        trigger: "#touch",
+                        trigger: "#get-in-touch",
                         start: "top 70%",
                         end: mobile ? "40% 60%" : "bottom bottom",
                         scrub: true,
@@ -71,7 +71,7 @@ export const GetInTouch = () => {
     }, []);
 
     return (
-        <section id="touch" className="w-screen pt-32 pb-48 bg-white px-12 relative z-20">
+        <section id="get-in-touch" className="w-screen pt-32 pb-48 bg-[#eee] px-12 relative z-20">
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
                 <p className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">05<span className="text-black/40">//</span>{t('sectionTitle')}</p>
                 {text.split(' ').map((word, index) => {
