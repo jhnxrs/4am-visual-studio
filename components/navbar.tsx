@@ -1,5 +1,7 @@
 "use client"
 
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { useApplicationState } from "@/providers/application-state";
 
@@ -11,11 +13,20 @@ export const Navbar = (props: Props) => {
     const { dark } = useApplicationState();
     const { locale } = props;
 
+    useGSAP(() => {
+        gsap.from(document.querySelector('#navbar-content'), {
+            opacity: 0,
+            duration: 1.5,
+            ease: "power2.out",
+        });
+    }, []);
+
     return (
         <div className="fixed w-full z-50">
             <div
                 className="w-full flex flex-row justify-between items-center p-6 bg-transparent data-[dark=true]:bg-white"
                 data-dark={dark}
+                id="navbar-content"
             >
                 <img
                     src="/logo.png"

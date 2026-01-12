@@ -6,6 +6,7 @@ import { Services } from "@/components/services";
 import { GetInTouch } from "@/components/get-in-touch";
 import { AnimationController } from "@/components/animation-controller";
 import { getLocale } from "@/lib/get-locale";
+import { Approach } from "@/components/approach";
 
 export default async function Page() {
   const locale = await getLocale();
@@ -17,6 +18,7 @@ export default async function Page() {
       <Intro />
       <Work />
       <Services />
+      <Approach />
       <GetInTouch />
     </AnimationController>
   )

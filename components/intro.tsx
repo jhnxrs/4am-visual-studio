@@ -51,6 +51,14 @@ export const Intro = () => {
         return () => mm.revert();
     }, []);
 
+    useGSAP(() => {
+        gsap.from(document.querySelector('#intro-upper-text'), {
+            opacity: 0,
+            duration: 1.5,
+            ease: "power2.out",
+        });
+    }, []);
+
     return (
         <section id="intro" className="w-screen py-48 px-12 relative bg-white z-20">
             <div id="intro-upper-text" className="-top-48 md:-top-30 absolute px-6 z-20 flex flex-col gap-2 md:gap-1 w-full left-1/2 transform -translate-x-1/2">
