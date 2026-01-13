@@ -31,7 +31,7 @@ export const Intro = () => {
                 gsap.timeline({
                     scrollTrigger: {
                         trigger: "#intro",
-                        start: "top 60%",
+                        start: mobile ? "top 30%" : "top 60%",
                         end: mobile ? "+=200" : "+=400",
                         scrub: true,
                         invalidateOnRefresh: true,

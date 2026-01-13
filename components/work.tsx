@@ -19,20 +19,6 @@ export const Work = () => {
 
         if (letters) {
             gsap.set(letters, { y: 40, opacity: 0 });
-
-            gsap.timeline({
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 80%",
-                    end: "40% 90%",
-                    scrub: true,
-                },
-            }).to(letters, {
-                y: 0,
-                opacity: 1,
-                ease: "power3.out",
-                stagger: 0.08,
-            });
         }
 
         const columns = sectionRef.current?.querySelectorAll(
@@ -47,44 +33,88 @@ export const Work = () => {
             willChange: "transform, opacity",
         });
 
-        ScrollTrigger.batch(columns, {
-            start: "top 85%",
-            end: "bottom 25%",
+        const mm = gsap.matchMedia();
 
-            onEnter: (batch) =>
-                gsap.to(batch, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.8,
-                    stagger: 0.15,
-                    ease: "power3.out",
-                }),
+        mm.add(
+            {
+                mobile: "(max-width: 767px)",
+                desktop: "(min-width: 768px)",
+            },
+            (context) => {
+                const { mobile } = context.conditions!;
 
-            onLeave: (batch) =>
-                gsap.to(batch, {
-                    opacity: 0,
-                    y: -80,
-                    duration: 0.4,
-                    ease: "power3.in",
-                }),
+                if (letters) {
+                    gsap.timeline({
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: "top 80%",
+                            end: mobile ? "20% 90%" : "40% 90%",
+                            scrub: true,
+                        },
+                    }).to(letters, {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        stagger: 0.08,
+                    });
+                }
 
-            onEnterBack: (batch) =>
-                gsap.to(batch, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.8,
-                    stagger: 0.15,
-                    ease: "power3.out",
-                }),
+                ScrollTrigger.batch(columns, {
+                    start: "top 85%",
+                    ...(mobile
+                        ? {
+                            once: true,
+                            onEnter: (batch) =>
+                                gsap.to(batch, {
+                                    opacity: 1,
+                                    y: 0,
+                                    duration: 0.8,
+                                    stagger: 0.15,
+                                    ease: "power3.out",
+                                }),
+                        }
+                        : {
+                            end: "bottom 25%",
 
-            onLeaveBack: (batch) =>
-                gsap.to(batch, {
-                    opacity: 0,
-                    y: 80,
-                    duration: 0.4,
-                    ease: "power3.in",
-                }),
-        });
+                            onEnter: (batch) =>
+                                gsap.to(batch, {
+                                    opacity: 1,
+                                    y: 0,
+                                    duration: 0.8,
+                                    stagger: 0.15,
+                                    ease: "power3.out",
+                                }),
+
+                            onLeave: (batch) =>
+                                gsap.to(batch, {
+                                    opacity: 0,
+                                    y: -80,
+                                    duration: 0.4,
+                                    ease: "power3.in",
+                                }),
+
+                            onEnterBack: (batch) =>
+                                gsap.to(batch, {
+                                    opacity: 1,
+                                    y: 0,
+                                    duration: 0.8,
+                                    stagger: 0.15,
+                                    ease: "power3.out",
+                                }),
+
+                            onLeaveBack: (batch) =>
+                                gsap.to(batch, {
+                                    opacity: 0,
+                                    y: 80,
+                                    duration: 0.4,
+                                    ease: "power3.in",
+                                }),
+                        }),
+                });
+            }
+        );
+
+        return () => mm.revert();
     }, []);
 
     return (
@@ -93,7 +123,6 @@ export const Work = () => {
             id="work"
             className="w-screen py-32 px-12 flex flex-col bg-[#eee] relative z-20"
         >
-            {/* Title */}
             <div className="relative w-full mb-16 work-title">
                 <p className="absolute -top-4 left-0 text-black/80 tracking-wide text-xs">
                     02<span className="text-black/40">//</span>{t("sectionTitle")}
@@ -115,16 +144,15 @@ export const Work = () => {
                 </div>
             </div>
 
-            {/* Content */}
             <div
                 id="work-content"
-                className="grid grid-cols-3 gap-5 contain-[layout_paint]"
+                className="grid grid-cols-1 md:grid-cols-3 gap-5 contain-[layout_paint]"
             >
                 <div className="work-column flex flex-col gap-5 w-full">
-                    <p className="max-w-sm text-black mt-24">
+                    <p className="max-w-sm text-black md:mt-24">
                         {t("caption")}
                     </p>
-                    <div className="w-full relative h-125">
+                    <div className="w-full relative h-80 md:h-125">
                         <Image
                             src="/work01.webp"
                             alt=""
@@ -147,7 +175,7 @@ export const Work = () => {
                 </div>
 
                 <div className="work-column flex flex-col gap-5 w-full">
-                    <div className="w-full relative h-175">
+                    <div className="w-full relative h-140 md:h-175">
                         <Image
                             src="/work03.webp"
                             alt=""
@@ -157,7 +185,7 @@ export const Work = () => {
                             className="object-cover"
                         />
                     </div>
-                    <div className="w-full relative h-140">
+                    <div className="w-full relative h-80 md:h-140">
                         <Image
                             src="/work04.webp"
                             alt=""
