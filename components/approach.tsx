@@ -59,6 +59,22 @@ export const Approach = () => {
         const video = videoRef.current
         if (!video) return
 
+        video.muted = true
+        video.playsInline = true
+
+        // iOS Safari needs an explicit play() call
+        const playPromise = video.play()
+
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    video.pause() // we only "unlock" it
+                })
+                .catch(() => {
+                    // Safari may block until first interaction — that's OK
+                })
+        }
+
         let targetTime = 0
         let rafId: number | null = null
 
@@ -90,6 +106,7 @@ export const Approach = () => {
             if (rafId) cancelAnimationFrame(rafId)
         }
     }, [])
+
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
@@ -139,6 +156,7 @@ export const Approach = () => {
                     src="/asset2.mp4"
                     muted
                     playsInline
+                    webkit-playsinline="true"
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
