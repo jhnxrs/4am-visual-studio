@@ -41,5 +41,12 @@
     "approach": {
         "sectionTitle": "APPROACH",
         "sectionText": "For us, every detail matters. Light, texture, and proportion come together to shape atmosphere and emotion. We don’t just visualize spaces — we craft experiences that give meaning to architecture."
+    },
+    "navbar": {
+        "intro": "Intro",
+        "recentProjects": "Recent Projects",
+        "services": "Services",
+        "approach": "Approach",
+        "getInTouch": "Get In Touch"
     }
 }

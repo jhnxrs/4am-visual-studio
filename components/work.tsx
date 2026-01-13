@@ -5,8 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
-
-gsap.registerPlugin(ScrollTrigger);
+import Image from "next/image";
 
 export const Work = () => {
     const t = useTranslations("work");
@@ -14,10 +13,12 @@ export const Work = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        const words = sectionRef.current?.querySelectorAll("span");
+        const letters = sectionRef.current?.querySelectorAll(
+            ".work-title span"
+        );
 
-        if (words) {
-            gsap.set(words, { y: 40, opacity: 0 });
+        if (letters) {
+            gsap.set(letters, { y: 40, opacity: 0 });
 
             gsap.timeline({
                 scrollTrigger: {
@@ -26,7 +27,7 @@ export const Work = () => {
                     end: "40% 90%",
                     scrub: true,
                 },
-            }).to(words, {
+            }).to(letters, {
                 y: 0,
                 opacity: 1,
                 ease: "power3.out",
@@ -34,46 +35,73 @@ export const Work = () => {
             });
         }
 
-        const rows = gsap.utils.toArray<HTMLElement>(
-            "#work-content > div"
+        const columns = sectionRef.current?.querySelectorAll(
+            ".work-column"
         );
 
-        gsap.set(rows, {
-            opacity: 0,
-            y: 60,
+        if (!columns) return;
+
+        gsap.set(columns, {
+            opacity: 0.2,
+            y: 80,
+            willChange: "transform, opacity",
         });
 
-        rows.forEach((row) => {
-            gsap.to(row, {
-                opacity: 1,
-                y: 0,
-                duration: 0.5,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: row,
-                    start: "top 60%",
-                    toggleActions: "play none none reverse",
-                },
-            });
+        ScrollTrigger.batch(columns, {
+            start: "top 85%",
+            end: "bottom 25%",
+
+            onEnter: (batch) =>
+                gsap.to(batch, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "power3.out",
+                }),
+
+            onLeave: (batch) =>
+                gsap.to(batch, {
+                    opacity: 0,
+                    y: -80,
+                    duration: 0.4,
+                    ease: "power3.in",
+                }),
+
+            onEnterBack: (batch) =>
+                gsap.to(batch, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "power3.out",
+                }),
+
+            onLeaveBack: (batch) =>
+                gsap.to(batch, {
+                    opacity: 0,
+                    y: 80,
+                    duration: 0.4,
+                    ease: "power3.in",
+                }),
         });
     }, []);
 
     return (
         <section
             ref={sectionRef}
-            className="w-screen py-32 px-12 flex flex-col relative bg-[#eee] z-20"
             id="work"
+            className="w-screen py-32 px-12 flex flex-col bg-[#eee] relative z-20"
         >
-            <div className="relative w-full">
+            {/* Title */}
+            <div className="relative w-full mb-16 work-title">
                 <p className="absolute -top-4 left-0 text-black/80 tracking-wide text-xs">
-                    02
-                    <span className="text-black/40">//</span>
-                    {t("sectionTitle")}
+                    02<span className="text-black/40">//</span>{t("sectionTitle")}
                 </p>
 
-                <div className="flex flex-row items-center flex-wrap gap-0 leading-none md:gap-8">
+                <div className="flex flex-wrap items-center leading-none gap-x-6">
                     {text.split(" ").map((word) => (
-                        <div key={word} className="flex flex-row items-center">
+                        <div key={word} className="flex">
                             {word.split("").map((letter, index) => (
                                 <span
                                     key={index}
@@ -87,40 +115,90 @@ export const Work = () => {
                 </div>
             </div>
 
+            {/* Content */}
             <div
-                className="w-full flex flex-col mt-5 md:mt-0"
                 id="work-content"
+                className="grid grid-cols-3 gap-5 contain-[layout_paint]"
             >
-                <div className="w-full flex flex-col md:flex-row md:items-end gap-5">
-                    <p className="max-w-sm text-black">
+                <div className="work-column flex flex-col gap-5 w-full">
+                    <p className="max-w-sm text-black mt-24">
                         {t("caption")}
                     </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5">
-                        <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200">
-                            <img src="/work01.png" className="w-full h-full object-cover object-[20%_80%]" />
-                        </div>
-                        <div className="w-full h-80 bg-gray-200">
-                            <img src="/work02.png" className="w-full h-full object-cover" />
-                        </div>
+                    <div className="w-full relative h-125">
+                        <Image
+                            src="/work01.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
+                    </div>
+                    <div className="w-full relative h-125">
+                        <Image
+                            src="/work02.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5 mt-5">
-                    <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200">
-                        <img src="/work05.png" className="w-full h-full object-cover object-[20%_80%]" />
+                <div className="work-column flex flex-col gap-5 w-full">
+                    <div className="w-full relative h-175">
+                        <Image
+                            src="/work03.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
                     </div>
-                    <div className="w-full h-80 bg-gray-200">
-                        <img src="/work03.png" className="w-full h-full object-cover" />
+                    <div className="w-full relative h-140">
+                        <Image
+                            src="/work04.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5 mt-5">
-                    <div className="w-full h-80 bg-gray-200">
-                        <img src="/work04.png" className="w-full h-full object-cover object-bottom" />
+                <div className="work-column flex flex-col gap-5 w-full">
+                    <div className="w-full relative h-125">
+                        <Image
+                            src="/work05.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
                     </div>
-                    <div className="col-span-1 md:col-span-2 w-full h-80 bg-gray-200">
-                        <img src="/work06.png" className="w-full h-full object-cover object-[20%_80%]" />
+                    <div className="w-full relative h-50">
+                        <Image
+                            src="/work06.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
+                    </div>
+                    <div className="w-full relative h-60">
+                        <Image
+                            src="/work07.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
                     </div>
                 </div>
             </div>

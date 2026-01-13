@@ -19,7 +19,7 @@ export default async function Page() {
       <Work />
       <Services />
       <Approach />
-      <GetInTouch />
+      <GetInTouch locale={locale} />
     </AnimationController>
   )
 }

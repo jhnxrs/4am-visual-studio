@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export const Services = () => {
     const t = useTranslations('services');
@@ -95,7 +96,16 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 0)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.0.title')}</h2>
-                    <div className="w-full h-80 bg-gray-400" />
+                    <div className="w-full h-80 bg-gray-400 relative overflow-hidden">
+                        <Image
+                            src="/branding.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
+                    </div>
                     <p className="text-sm text-black/80">{t('cards.0.description')}</p>
                 </div>
                 <div
@@ -103,7 +113,16 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 1)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.1.title')}</h2>
-                    <div className="w-full h-80 bg-gray-400" />
+                    <div className="w-full h-80 bg-gray-400 relative overflow-hidden">
+                        <Image
+                            src="/design.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
+                    </div>
                     <p className="text-sm text-black/80">{t('cards.1.description')}</p>
                 </div>
                 <div
@@ -111,7 +130,16 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 2)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.2.title')}</h2>
-                    <div className="w-full h-80 bg-gray-400" />
+                    <div className="w-full h-80 bg-gray-400 relative overflow-hidden">
+                        <Image
+                            src="/arch.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
+                    </div>
                     <p className="text-sm text-black/80">{t('cards.2.description')}</p>
                 </div>
                 <div
@@ -119,7 +147,16 @@ export const Services = () => {
                     ref={(el) => setCardRef(el, 3)}
                 >
                     <h2 className="font-medium text-lg">{t('cards.3.title')}</h2>
-                    <div className="w-full h-80 bg-gray-400" />
+                    <div className="w-full h-80 bg-gray-400 relative overflow-hidden">
+                        <Image
+                            src="/media.webp"
+                            alt=""
+                            fill
+                            priority
+                            sizes="(min-width: 768px) 25vw, 100vw"
+                            className="object-cover"
+                        />
+                    </div>
                     <p className="text-sm text-black/80">{t('cards.3.description')}</p>
                 </div>
             </div>
