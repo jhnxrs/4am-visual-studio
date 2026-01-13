@@ -254,7 +254,7 @@ export const WorkV2 = () => {
                 className="relative mt-[100vh] z-20 h-[150vh]"
             >
                 <div ref={wordsRef} className="max-w-[70%] mx-auto relative flex flex-row items-center flex-wrap gap-2">
-                    <p className="absolute top-4 left-0 text-white/80 tracking-wide text-xs">04<span className="text-white/40">//</span>{t('sectionTitle')}</p>
+                    <p className="absolute top-4 left-0 text-white/80 tracking-wide text-xs">02<span className="text-white/40">//</span>{t('sectionTitle')}</p>
                     {text.split(' ').map((word, index) => {
                         const isFirstWord = index === 0;
 
