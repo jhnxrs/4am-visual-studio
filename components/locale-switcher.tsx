@@ -26,7 +26,7 @@ export const LocaleSwitcher = (props: Props) => {
             >
                 🇧🇷 PT
             </button>
-            <span className="mx-1 text-white/20">/</span>
+            <span className="mx-1 text-white/20 data-[dark=true]:text-black/20" data-dark={props.dark}>/</span>
             <button
                 className="tracking-wide text-white data-[dark=true]:text-black text-xs cursor-pointer data-[active=true]:bg-white/10 data-[dark=true]:data-[active=true]:bg-black/10 data-[active=true]:backdrop-blur-sm px-1.5 py-0.5 rounded-md"
                 data-active={props.locale === 'en'}

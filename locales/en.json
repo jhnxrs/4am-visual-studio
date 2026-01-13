@@ -36,7 +36,8 @@
     "work": {
         "sectionTitle": "OUR WORK",
         "sectionText": "RECENT PROJECTS",
-        "caption": "From concept to final frame, we translate ideas into powerful visual experiences that elevate projects and define identities."
+        "caption": "From concept to final frame, we translate ideas into powerful visual experiences that elevate projects and define identities.",
+        "exploreMore": "Explore More"
     },
     "approach": {
         "sectionTitle": "APPROACH",
@@ -48,5 +49,8 @@
         "services": "Services",
         "approach": "Approach",
         "getInTouch": "Get In Touch"
-    }
+    },
+    "404": "Oops! Looks like the page you’re trying to find doesn’t exist.",
+    "goHome": "Go home",
+    "workPageTitle": "Explore our work and discover how form, light, and detail come together through 3D architectural visualization."
 }

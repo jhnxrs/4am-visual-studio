@@ -228,6 +228,28 @@ export const Work = () => {
                             className="object-cover"
                         />
                     </div>
+                    <a
+                        href="/work"
+                        className="px-6 group hover:bg-black hover:text-white transition-all duration-200 py-2 rounded-full font-medium border border-black w-fit flex flex-row items-center gap-6"
+                    >
+                        {t('exploreMore')}
+                        <div className="bg-black p-2 group-hover:bg-white group-hover:text-black transition-all duration-200 rounded-full text-white">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                className=" w-6 h-6"
+                            >
+                                <path
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="1.5"
+                                    d="M4 12h16m0 0l-6-6m6 6l-6 6"
+                                />
+                            </svg>
+                        </div>
+                    </a>
                 </div>
             </div>
         </section>

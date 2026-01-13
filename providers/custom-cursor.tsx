@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useApplicationState } from "@/providers/application-state";
 
 export const CustomCursor = () => {
     const cursorRef = useRef<HTMLDivElement>(null);
+    const { isMobile } = useApplicationState();
 
     const mouse = useRef({ x: 0, y: 0 });
     const pos = useRef({ x: 0, y: 0 });
@@ -40,6 +42,10 @@ export const CustomCursor = () => {
             gsap.ticker.remove(() => { });
         };
     }, []);
+
+    if (isMobile) {
+        return null;
+    }
 
     return <div ref={cursorRef} className="custom-cursor" />;
 };
