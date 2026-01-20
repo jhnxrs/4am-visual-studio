@@ -77,6 +77,7 @@ export const Navbar = ({ locale }: Props) => {
         { name: t('services'), href: "#services" },
         { name: t('approach'), href: "#approach" },
         { name: t('getInTouch'), href: "#get-in-touch" },
+        { name: t('gallery'), href: "/work", external: true },
     ];
 
     return (
@@ -114,25 +115,39 @@ export const Navbar = ({ locale }: Props) => {
                             />
 
                             <div className="flex flex-col gap-2">
-                                {links.map((link) => (
-                                    <a
-                                        key={link.name}
-                                        href={link.href}
-                                        className="uppercase text-2xl font-semibold hover:opacity-50 transition"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setMenuOpen(false);
+                                {links.map((link) => {
+                                    if (link.external) {
+                                        return (
+                                            <a
+                                                key={link.name}
+                                                href={link.href}
+                                                className="uppercase text-2xl font-semibold hover:text-[#C55BF9] transition"
+                                            >
+                                                {link.name}
+                                            </a>
+                                        )
+                                    }
 
-                                            gsap.to(window, {
-                                                duration: 1,
-                                                ease: "power3.inOut",
-                                                scrollTo: link.href,
-                                            });
-                                        }}
-                                    >
-                                        {link.name}
-                                    </a>
-                                ))}
+                                    return (
+                                        <a
+                                            key={link.name}
+                                            href={link.href}
+                                            className="uppercase text-2xl font-semibold hover:text-[#C55BF9] transition"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setMenuOpen(false);
+
+                                                gsap.to(window, {
+                                                    duration: 1,
+                                                    ease: "power3.inOut",
+                                                    scrollTo: link.href,
+                                                });
+                                            }}
+                                        >
+                                            {link.name}
+                                        </a>
+                                    )
+                                })}
                             </div>
 
                             <div className="flex flex-row items-center gap-3">

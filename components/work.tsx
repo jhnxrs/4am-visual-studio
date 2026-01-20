@@ -1,26 +1,158 @@
-"use client";
+"use client"
 
-import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
+import { useEffect, useRef } from "react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useGSAP } from "@gsap/react"
+import { useTranslations } from "next-intl"
+import Image from "next/image"
+import { useApplicationState } from "@/providers/application-state"
+import { HoverVideo } from "@/components/hover-video"
 
 export const Work = () => {
-    const t = useTranslations("work");
-    const text = t("sectionText");
-    const sectionRef = useRef<HTMLDivElement>(null);
+    const { setFullscreenUrl, isMobile } = useApplicationState();
+    const t = useTranslations('work');
+    const sectionRef = useRef<HTMLElement>(null)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const overlayRef = useRef<HTMLDivElement>(null)
+
+    const text = t('sectionText');
+    const wordsRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        const letters = sectionRef.current?.querySelectorAll(
-            ".work-title span"
-        );
+        gsap.set(videoRef.current, {
+            scale: 1.05,
+            filter: "blur(24px)",
+        })
 
-        if (letters) {
-            gsap.set(letters, { y: 40, opacity: 0 });
+        gsap.set(overlayRef.current, {
+            opacity: 0.8,
+        })
+
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+            },
+        })
+            .to(videoRef.current, {
+                filter: "blur(0px)",
+                scale: 1,
+                ease: "none",
+            }, 0.15)
+            .to(overlayRef.current, {
+                opacity: 0.6,
+                ease: "none",
+            }, 0.15)
+            .to(videoRef.current, {
+                filter: "blur(24px)",
+                scale: 1.05,
+                ease: "none",
+            }, 0.85)
+            .to(overlayRef.current, {
+                opacity: 0.8,
+                ease: "none",
+            }, 0.85)
+
+    }, [])
+
+    useEffect(() => {
+        const video = videoRef.current
+        if (!video) return
+
+        video.muted = true
+        video.playsInline = true
+
+        // iOS Safari needs an explicit play() call
+        const playPromise = video.play()
+
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    video.pause() // we only "unlock" it
+                })
+                .catch(() => {
+                    // Safari may block until first interaction — that's OK
+                })
         }
 
+        let targetTime = 0
+        let rafId: number | null = null
+
+        const update = () => {
+            if (!video.duration) return
+
+            const delta = targetTime - video.currentTime
+            const speed =
+                Math.abs(delta) > 0.25 ? 0.35 :
+                    Math.abs(delta) > 0.08 ? 0.25 :
+                        0.15
+
+            video.currentTime += delta * speed
+            rafId = requestAnimationFrame(update)
+        }
+
+        ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+            onUpdate: (self) => {
+                targetTime = self.progress * video.duration
+                if (!rafId) update()
+            },
+        })
+
+        return () => {
+            if (rafId) cancelAnimationFrame(rafId)
+        }
+    }, [])
+
+
+    useGSAP(() => {
+        const words = wordsRef.current?.querySelectorAll("span");
+        if (!words) return;
+
+        gsap.set(words, { y: 40, opacity: 0 });
+
+        const mm = gsap.matchMedia();
+
+        mm.add(
+            {
+                mobile: "(max-width: 767px)",
+                desktop: "(min-width: 768px)",
+            },
+            (context) => {
+                const { mobile } = context.conditions!;
+
+                gsap.timeline({
+                    scrollTrigger: {
+                        trigger: contentRef.current,
+                        start: "top 90%",
+                        end: "10% 50%",
+                        scrub: true,
+                        invalidateOnRefresh: true,
+                    },
+                }).fromTo(
+                    words,
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        stagger: 0.08,
+                    }
+                );
+            }
+        );
+
+        return () => mm.revert();
+    }, []);
+
+    useGSAP(() => {
         const columns = sectionRef.current?.querySelectorAll(
             ".work-column"
         );
@@ -42,22 +174,6 @@ export const Work = () => {
             },
             (context) => {
                 const { mobile } = context.conditions!;
-
-                if (letters) {
-                    gsap.timeline({
-                        scrollTrigger: {
-                            trigger: sectionRef.current,
-                            start: "top 80%",
-                            end: mobile ? "20% 90%" : "40% 90%",
-                            scrub: true,
-                        },
-                    }).to(letters, {
-                        y: 0,
-                        opacity: 1,
-                        ease: "power3.out",
-                        stagger: 0.08,
-                    });
-                }
 
                 ScrollTrigger.batch(columns, {
                     start: "top 85%",
@@ -118,140 +234,195 @@ export const Work = () => {
     }, []);
 
     return (
-        <section
-            ref={sectionRef}
-            id="work"
-            className="w-screen py-32 px-12 flex flex-col bg-[#eee] relative z-20"
-        >
-            <div className="relative w-full mb-16 work-title">
-                <p className="absolute -top-4 left-0 text-black/80 tracking-wide text-xs">
-                    02<span className="text-black/40">//</span>{t("sectionTitle")}
-                </p>
+        <section ref={sectionRef} className="relative h-[400vh]" id="approach">
+            <div className="sticky top-0 h-screen w-screen overflow-hidden">
+                <video
+                    ref={videoRef}
+                    src="/asset1.mp4"
+                    muted
+                    playsInline
+                    webkit-playsinline="true"
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
 
-                <div className="flex flex-wrap items-center leading-none gap-x-6">
-                    {text.split(" ").map((word) => (
-                        <div key={word} className="flex">
-                            {word.split("").map((letter, index) => (
-                                <span
-                                    key={index}
-                                    className="text-black text-[50px] md:text-[120px] font-black"
-                                >
-                                    {letter}
-                                </span>
-                            ))}
-                        </div>
-                    ))}
-                </div>
+                <div
+                    ref={overlayRef}
+                    className="absolute inset-0 bg-linear-to-br from-[#09122e] to-black pointer-events-none z-5"
+                />
             </div>
 
             <div
-                id="work-content"
-                className="grid grid-cols-1 md:grid-cols-3 gap-5 contain-[layout_paint]"
+                ref={contentRef}
+                className="relative mt-[100vh] z-20 h-[150vh]"
             >
-                <div className="work-column flex flex-col gap-5 w-full">
-                    <p className="max-w-sm text-black md:mt-24">
-                        {t("caption")}
-                    </p>
-                    <div className="w-full relative h-80 md:h-125">
-                        <Image
-                            src="/work01.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
-                    <div className="w-full relative h-125">
-                        <Image
-                            src="/work02.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
+                <div ref={wordsRef} className="max-w-[70%] mx-auto relative flex flex-row items-center flex-wrap gap-2">
+                    <p className="absolute top-4 left-0 text-white/80 tracking-wide text-xs">02<span className="text-white/40">//</span>{t('sectionTitle')}</p>
+                    {text.split(' ').map((word, index) => {
+                        const isFirstWord = index === 0;
+
+                        return (
+                            <span key={index} className="text-nowrap data-[first=true]:ml-32 2xl:ml-40 text-2xl md:text-4xl tracking-wide text-white" data-first={isFirstWord}>{word}</span>
+                        )
+                    })}
                 </div>
 
-                <div className="work-column flex flex-col gap-5 w-full">
-                    <div className="w-full relative h-140 md:h-175">
-                        <Image
-                            src="/work03.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
-                    <div className="w-full relative h-80 md:h-140">
-                        <Image
-                            src="/work04.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
-                </div>
-
-                <div className="work-column flex flex-col gap-5 w-full">
-                    <div className="w-full relative h-125">
-                        <Image
-                            src="/work05.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
-                    <div className="w-full relative h-50">
-                        <Image
-                            src="/work06.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
-                    <div className="w-full relative h-60">
-                        <Image
-                            src="/work07.webp"
-                            alt=""
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover"
-                        />
-                    </div>
-                    <a
-                        href="/work"
-                        className="px-6 group hover:bg-black hover:text-white transition-all duration-200 py-2 rounded-full font-medium border border-black w-fit flex flex-row items-center gap-6"
-                    >
-                        {t('exploreMore')}
-                        <div className="bg-black p-2 group-hover:bg-white group-hover:text-black transition-all duration-200 rounded-full text-white">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                className=" w-6 h-6"
-                            >
-                                <path
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.5"
-                                    d="M4 12h16m0 0l-6-6m6 6l-6 6"
-                                />
-                            </svg>
+                <div
+                    id="work-content"
+                    className="max-w-[70%] w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 contain-[layout_paint] mt-12"
+                >
+                    <div className="work-column flex flex-col gap-5 w-full">
+                        <p className="max-w-sm text-white md:mt-24">
+                            {t("caption")}
+                        </p>
+                        <div className="w-full relative h-80 md:h-125">
+                            <Image
+                                src="/work01.webp"
+                                alt=""
+                                fill
+                                priority
+                                sizes="(min-width: 768px) 25vw, 100vw"
+                                className="object-cover cursor-pointer"
+                                data-media={true}
+                                draggable={false}
+                                onClick={() => {
+                                    setFullscreenUrl("/work01.webp");
+                                }}
+                            />
                         </div>
-                    </a>
+                        <div className="w-full relative h-125">
+                            {isMobile && (
+                                <Image
+                                    src="/work02.webp"
+                                    alt=""
+                                    fill
+                                    priority
+                                    sizes="(min-width: 768px) 25vw, 100vw"
+                                    className="object-cover cursor-pointer"
+                                    data-media={true}
+                                    draggable={false}
+                                    onClick={() => {
+                                        setFullscreenUrl("/work02.webp");
+                                    }}
+                                />
+                            )}
+
+                            {!isMobile && (
+                                <HoverVideo src="/work02-vid.mp4" />
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="work-column flex flex-col gap-5 w-full">
+                        <div className="w-full relative h-140 md:h-175">
+                            <Image
+                                src="/work03.webp"
+                                alt=""
+                                fill
+                                priority
+                                sizes="(min-width: 768px) 25vw, 100vw"
+                                className="object-cover cursor-pointer"
+                                data-media={true}
+                                draggable={false}
+                                onClick={() => {
+                                    setFullscreenUrl("/work03.webp");
+                                }}
+                            />
+                        </div>
+                        <div className="w-full relative h-80 md:h-140">
+                            <Image
+                                src="/work04.webp"
+                                alt=""
+                                fill
+                                priority
+                                sizes="(min-width: 768px) 25vw, 100vw"
+                                className="object-cover cursor-pointer"
+                                data-media={true}
+                                draggable={false}
+                                onClick={() => {
+                                    setFullscreenUrl("/work04.webp");
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="work-column flex flex-col gap-5 w-full">
+                        <div className="w-full relative h-125">
+                            <Image
+                                src="/work05.webp"
+                                alt=""
+                                fill
+                                priority
+                                sizes="(min-width: 768px) 25vw, 100vw"
+                                className="object-cover cursor-pointer"
+                                data-media={true}
+                                draggable={false}
+                                onClick={() => {
+                                    setFullscreenUrl("/work05.webp");
+                                }}
+                            />
+                        </div>
+                        <div className="w-full relative h-50">
+                            <Image
+                                src="/work06.webp"
+                                alt=""
+                                fill
+                                priority
+                                sizes="(min-width: 768px) 25vw, 100vw"
+                                className="object-cover cursor-pointer"
+                                data-media={true}
+                                draggable={false}
+                                onClick={() => {
+                                    setFullscreenUrl("/work06.webp");
+                                }}
+                            />
+                        </div>
+                        <div className="w-full relative h-60">
+                            {isMobile && (
+                                <Image
+                                    src="/work07.webp"
+                                    alt=""
+                                    fill
+                                    priority
+                                    sizes="(min-width: 768px) 25vw, 100vw"
+                                    className="object-cover cursor-pointer"
+                                    data-media={true}
+                                    draggable={false}
+                                    onClick={() => {
+                                        setFullscreenUrl("/work07.webp");
+                                    }}
+                                />
+                            )}
+
+                            {!isMobile && (
+                                <HoverVideo src="/work07-vid.mp4" />
+                            )}
+                        </div>
+                        <a
+                            href="/work"
+                            className="px-6 group hover:bg-[#C55BF9] hover:border-[#C55BF9] hover:text-black text-white transition-all duration-200 py-2 rounded-full font-medium border border-white w-fit flex flex-row items-center gap-6"
+                        >
+                            {t('exploreMore')}
+                            <div className="bg-white p-2 group-hover:bg-black group-hover:text-white transition-all duration-200 rounded-full text-black">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    className=" w-6 h-6"
+                                >
+                                    <path
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="1.5"
+                                        d="M4 12h16m0 0l-6-6m6 6l-6 6"
+                                    />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
-    );
-};
+    )
+}

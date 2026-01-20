@@ -1,5 +1,6 @@
 import { ApplicationStateProvider } from "@/providers/application-state";
 import { CustomCursor } from "@/providers/custom-cursor";
+import { FullscreenProvider } from "@/providers/fullscreen";
 import { SmoothScroll } from "@/providers/smooth-scroll";
 import { NextIntlClientProvider } from "next-intl";
 
@@ -12,8 +13,10 @@ export const Providers = (props: Props) => {
         <SmoothScroll>
             <NextIntlClientProvider>
                 <ApplicationStateProvider>
-                    <CustomCursor />
-                    {props.children}
+                    <FullscreenProvider>
+                        <CustomCursor />
+                        {props.children}
+                    </FullscreenProvider>
                 </ApplicationStateProvider>
             </NextIntlClientProvider>
         </SmoothScroll>

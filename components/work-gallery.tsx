@@ -6,8 +6,10 @@ import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { workImages } from "@/lib/images";
 import Image from "next/image";
+import { useApplicationState } from "@/providers/application-state";
 
 export const WorkGallery = () => {
+    const { setFullscreenUrl } = useApplicationState();
     const t = useTranslations();
     const text = t("workPageTitle");
 
@@ -68,7 +70,9 @@ export const WorkGallery = () => {
                                             src={image}
                                             alt=""
                                             sizes="100vw"
-                                            className="w-full h-auto"
+                                            className="w-full h-auto cursor-pointer"
+                                            data-media={true}
+                                            onClick={() => setFullscreenUrl(image.src)}
                                         />
                                     </div>
                                 )

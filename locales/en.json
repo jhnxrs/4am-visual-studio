@@ -48,9 +48,11 @@
         "recentProjects": "Recent Projects",
         "services": "Services",
         "approach": "Approach",
-        "getInTouch": "Get In Touch"
+        "getInTouch": "Get In Touch",
+        "gallery": "Gallery"
     },
     "404": "Oops! Looks like the page you’re trying to find doesn’t exist.",
     "goHome": "Go home",
-    "workPageTitle": "Explore our work and discover how form, light, and detail come together through 3D architectural visualization."
+    "workPageTitle": "Explore our work and discover how form, light, and detail come together through 3D architectural visualization.",
+    "view": "View"
 }

@@ -21,7 +21,7 @@ export default async function Page() {
                         <LocaleSwitcher dark={true} locale={locale} />
                     </div>
                     <a
-                        className="px-4 py-2 rounded-full text-white bg-black font-light text-sm cursor-pointer hover:opacity-80 transition-all duration-200"
+                        className="px-4 py-2 rounded-full text-white bg-black font-light text-sm cursor-pointer hover:bg-[#C55BF9] hover:text-black transition-all duration-200"
                         href="/"
                     >
                         {t("goHome")}

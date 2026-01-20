@@ -10,7 +10,9 @@ import {
 
 type ApplicationStateContext = {
     dark: boolean;
+    fullscreenUrl?: string;
     setDark: (dark: boolean) => void;
+    setFullscreenUrl: (url?: string) => void;
     isMobile: boolean;
 };
 
@@ -23,6 +25,11 @@ const MOBILE_BREAKPOINT = 768;
 export const ApplicationStateProvider = ({ children }: { children: ReactNode }) => {
     const [dark, setDark] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
+    const [fullscreenUrl, setFullscreenUrl] = useState<string | undefined>(undefined);
+
+    const _setFullscreenUrl = (url?: string) => {
+        setFullscreenUrl(url);
+    }
 
     const _setDark = (dark: boolean) => {
         setDark(dark);
@@ -39,7 +46,7 @@ export const ApplicationStateProvider = ({ children }: { children: ReactNode }) 
     }, [])
 
     return (
-        <ApplicationStateContext.Provider value={{ dark, isMobile, setDark: _setDark }}>
+        <ApplicationStateContext.Provider value={{ dark, isMobile, fullscreenUrl, setFullscreenUrl: _setFullscreenUrl, setDark: _setDark }}>
             {children}
         </ApplicationStateContext.Provider>
     );
