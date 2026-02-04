@@ -16,7 +16,7 @@ export default async function Page() {
       <Navbar locale={locale} />
       <Hero />
       <Intro />
-      <Work />
+      <Work locale={locale} />
       <Services />
       <Approach />
       <GetInTouch locale={locale} />

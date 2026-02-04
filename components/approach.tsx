@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
@@ -148,6 +148,26 @@ export const Approach = () => {
         return () => mm.revert();
     }, []);
 
+    useLayoutEffect(() => {
+        const root = wordsRef.current;
+        if (!root) return;
+
+        const label = root.querySelector<HTMLElement>("[data-label]");
+        if (!label) return;
+
+        const apply = () => {
+            const w = label.getBoundingClientRect().width;
+            root.style.setProperty("--label-w", `${Math.ceil(w)}px`);
+        };
+
+        apply();
+
+        const ro = new ResizeObserver(apply);
+        ro.observe(label);
+
+        return () => ro.disconnect();
+    }, [t, text]);
+
     return (
         <section ref={sectionRef} className="relative h-[350vh]" id="approach">
             <div className="sticky top-0 h-screen w-screen overflow-hidden">
@@ -172,12 +192,12 @@ export const Approach = () => {
                 className="relative mt-[100vh] z-20 h-screen pointer-events-none"
             >
                 <div ref={wordsRef} className="max-w-[70%] mx-auto relative flex flex-row items-center flex-wrap gap-2">
-                    <p className="absolute top-4 left-0 text-white/80 tracking-wide text-xs">04<span className="text-white/40">//</span>{t('sectionTitle')}</p>
+                    <p data-label className="absolute top-4 left-0 text-white/80 tracking-wide text-xs">04<span className="text-white/40">//</span>{t('sectionTitle')}</p>
                     {text.split(' ').map((word, index) => {
                         const isFirstWord = index === 0;
 
                         return (
-                            <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-white" data-first={isFirstWord}>{word}</span>
+                            <span key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-white" data-first={isFirstWord}>{word}</span>
                         )
                     })}
                 </div>

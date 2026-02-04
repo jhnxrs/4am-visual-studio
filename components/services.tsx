@@ -2,7 +2,7 @@
 
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -65,8 +65,8 @@ export const Services = () => {
                         stagger: 0.25,
                         scrollTrigger: {
                             trigger: cards[0].parentElement,
-                            start: mobile ? "top 40%" : "top 60%",
-                            end: "bottom 90%",
+                            start: "top 60%",
+                            end: () => `+=${window.innerHeight * 0.25}`,
                             scrub: true,
                             invalidateOnRefresh: true,
                         },
@@ -76,17 +76,37 @@ export const Services = () => {
         );
 
         return () => mm.revert();
-    }, []);
+    }, [text]);
+
+    useLayoutEffect(() => {
+        const root = wordsRef.current;
+        if (!root) return;
+
+        const label = root.querySelector<HTMLElement>("[data-label]");
+        if (!label) return;
+
+        const apply = () => {
+            const w = label.getBoundingClientRect().width;
+            root.style.setProperty("--label-w", `${Math.ceil(w)}px`);
+        };
+
+        apply();
+
+        const ro = new ResizeObserver(apply);
+        ro.observe(label);
+
+        return () => ro.disconnect();
+    }, [t, text]);
 
     return (
         <section id="services" className="w-screen py-32 px-12 relative bg-[#eee] z-20 flex flex-col gap-12">
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
-                <p className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">03<span className="text-black/40">//</span>{t('sectionTitle')}</p>
+                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">03<span className="text-black/40">//</span>{t('sectionTitle')}</p>
                 {text.split(' ').map((word, index) => {
                     const isFirstWord = index === 0;
 
                     return (
-                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
+                        <span key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
                     )
                 })}
             </div>

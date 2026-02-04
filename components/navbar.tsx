@@ -227,11 +227,11 @@ export const Navbar = ({ locale }: Props) => {
                         <LocaleSwitcher locale={locale} dark={dark} />
 
                         <button
-                            className="flex flex-col gap-2"
+                            className="flex flex-col gap-2 group cursor-pointer"
                             onClick={() => setMenuOpen(true)}
                         >
-                            <div className="w-6 h-1 bg-[#eee] data-[dark=true]:bg-black" data-dark={dark} />
-                            <div className="w-6 h-1 bg-[#eee] data-[dark=true]:bg-black" data-dark={dark} />
+                            <div className="w-6 h-1 bg-[#eee] data-[dark=true]:bg-black group-hover:bg-[#C55BF9] data-[dark=true]:group-hover:bg-[#C55BF9] transition-colors duration-200 ease-in-out" data-dark={dark} />
+                            <div className="w-6 h-1 bg-[#eee] data-[dark=true]:bg-black group-hover:bg-[#C55BF9] data-[dark=true]:group-hover:bg-[#C55BF9] transition-colors duration-200 ease-in-out" data-dark={dark} />
                         </button>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export const Intro = () => {
@@ -14,43 +14,34 @@ export const Intro = () => {
 
     useGSAP(() => {
         const words = wordsRef.current?.querySelectorAll("span");
-        if (!words) return;
+        if (!words?.length) return;
 
         gsap.set(words, { y: 40, opacity: 0 });
 
-        const mm = gsap.matchMedia();
-
-        mm.add(
-            {
-                mobile: "(max-width: 767px)",
-                desktop: "(min-width: 768px)",
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#intro",
+                start: "top 60%",
+                end: () => `+=${window.innerHeight * 0.35}`,
+                scrub: true,
+                invalidateOnRefresh: true
             },
-            (context) => {
-                const { mobile } = context.conditions!;
+        });
 
-                gsap.timeline({
-                    scrollTrigger: {
-                        trigger: "#intro",
-                        start: mobile ? "top 30%" : "top 60%",
-                        end: mobile ? "+=200" : "+=400",
-                        scrub: true,
-                        invalidateOnRefresh: true,
-                    },
-                }).fromTo(
-                    words,
-                    { y: 40, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        ease: "power3.out",
-                        stagger: 0.08,
-                    }
-                );
-            }
-        );
+        tl.to(words, {
+            y: 0,
+            opacity: 1,
+            ease: "power3.out",
+            stagger: 0.08,
+        });
 
-        return () => mm.revert();
-    }, []);
+        ScrollTrigger.refresh();
+
+        return () => {
+            tl.scrollTrigger?.kill();
+            tl.kill();
+        };
+    }, [text]);
 
     useGSAP(() => {
         const el = document.querySelector('#intro-upper-text');
@@ -73,6 +64,26 @@ export const Intro = () => {
         });
     }, []);
 
+    useLayoutEffect(() => {
+        const root = wordsRef.current;
+        if (!root) return;
+
+        const label = root.querySelector<HTMLElement>("[data-label]");
+        if (!label) return;
+
+        const apply = () => {
+            const w = label.getBoundingClientRect().width;
+            root.style.setProperty("--label-w", `${Math.ceil(w)}px`);
+        };
+
+        apply();
+
+        const ro = new ResizeObserver(apply);
+        ro.observe(label);
+
+        return () => ro.disconnect();
+    }, [t, text]);
+
     return (
         <section id="intro" className="w-screen py-48 px-12 relative bg-[#eee] z-20">
             <div id="intro-upper-text" className="-top-48 md:-top-30 absolute px-6 z-20 flex flex-col gap-2 md:gap-1 w-full left-1/2 transform -translate-x-1/2">
@@ -85,12 +96,12 @@ export const Intro = () => {
             </div>
 
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
-                <p className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">01<span className="text-black/40">//</span>{t("sectionTitle")}</p>
+                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">01<span className="text-black/40">//</span>{t("sectionTitle")}</p>
                 {text.split(' ').map((word, index) => {
                     const isFirstWord = index === 0;
 
                     return (
-                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
+                        <span key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
                     )
                 })}
             </div>

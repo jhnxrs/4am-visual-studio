@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 type Props = {
     locale: 'pt' | 'en';
@@ -17,11 +17,12 @@ export const GetInTouch = (props: Props) => {
     const contactRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        const words = wordsRef.current?.querySelectorAll("span");
-        if (!words) return;
+        const root = wordsRef.current;
+        const contact = contactRef.current;
+        if (!root || !contact) return;
 
-        gsap.set(words, { y: 40, opacity: 0 });
-        gsap.set(contactRef.current, { y: 20, opacity: 0 });
+        const words = root.querySelectorAll("span");
+        if (!words.length) return;
 
         const mm = gsap.matchMedia();
 
@@ -30,65 +31,84 @@ export const GetInTouch = (props: Props) => {
                 mobile: "(max-width: 767px)",
                 desktop: "(min-width: 768px)",
             },
-            (context) => {
-                const { mobile } = context.conditions!;
+            () => {
+                gsap.set(words, { y: 40, opacity: 0 });
+                gsap.set(contact, { y: 20, opacity: 0 });
 
-                gsap.timeline({
-                    scrollTrigger: {
-                        trigger: "#get-in-touch",
-                        start: "top 70%",
-                        end: mobile ? "40% 60%" : "bottom bottom",
-                        scrub: true,
-                        invalidateOnRefresh: true,
+                const tl = gsap.timeline({ paused: true });
+
+                tl.to(words, {
+                    y: 0,
+                    opacity: 1,
+                    ease: "power3.out",
+                    stagger: 0.06,
+                    duration: 0.6,
+                }).to(
+                    contact,
+                    {
+                        y: 0,
+                        opacity: 1,
+                        ease: "power3.out",
+                        duration: 0.5,
                     },
-                }).fromTo(
-                    words,
-                    { y: 40, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        ease: "power3.out",
-                        stagger: 0.08,
-                    }
+                    "-=0.15"
                 );
 
-                gsap.fromTo(
-                    contactRef.current,
-                    { y: 20, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: contactRef.current,
-                            start: "top 85%",
-                            end: "top 60%",
-                            scrub: true,
-                            invalidateOnRefresh: true,
-                        },
-                    }
-                );
+                const st = gsap.to({}, {
+                    scrollTrigger: {
+                        trigger: root,
+                        start: "top 90%",
+                        once: true,
+                        onEnter: () => tl.play(),
+                        onEnterBack: () => tl.play(),
+                    },
+                });
+
+                return () => {
+                    st.scrollTrigger?.kill();
+                    tl.kill();
+                };
             }
         );
 
         return () => mm.revert();
-    }, []);
+    }, { dependencies: [text], revertOnUpdate: true });
+
+    useLayoutEffect(() => {
+        const root = wordsRef.current;
+        if (!root) return;
+
+        const label = root.querySelector<HTMLElement>("[data-label]");
+        if (!label) return;
+
+        const apply = () => {
+            const w = label.getBoundingClientRect().width;
+            root.style.setProperty("--label-w", `${Math.ceil(w)}px`);
+        };
+
+        apply();
+
+        const ro = new ResizeObserver(apply);
+        ro.observe(label);
+
+        return () => ro.disconnect();
+    }, [t, text]);
 
     return (
         <section id="get-in-touch" className="w-screen pt-32 pb-48 bg-[#eee] px-12 relative z-20">
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
-                <p className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">05<span className="text-black/40">//</span>{t('sectionTitle')}</p>
+                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">05<span className="text-black/40">//</span>{t('sectionTitle')}</p>
                 {text.split(' ').map((word, index) => {
                     const isFirstWord = index === 0;
 
                     return (
-                        <span key={index} className="text-nowrap data-[first=true]:ml-32 text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
+                        <span key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-black" data-first={isFirstWord}>{word}</span>
                     )
                 })}
             </div>
             <div
                 ref={contactRef}
-                className="flex flex-col md:flex-row md:items-center gap-6 mt-6"
+                className="flex flex-col md:flex-row md:items-center gap-6 mt-6 md:flex-wrap"
             >
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
                     <p className="text-black/60 font-light">{t('enquiries')}</p>
@@ -155,8 +175,12 @@ export const GetInTouch = (props: Props) => {
                         </svg>
                     </a>
                 </div>
-            </div>
 
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                    <p className="text-black/60 font-light">4AM VISUAL STUDIO LTDA</p>
+                    <p className="font-medium">40.961.555/0001-14</p>
+                </div>
+            </div>
         </section>
     )
 }

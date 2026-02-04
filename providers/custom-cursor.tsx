@@ -60,7 +60,7 @@ export const CustomCursor = () => {
 
         gsap.to(cursorRef.current, {
             scale: isMediaHover ? 1.8 : 1,
-            duration: 0.25,
+            duration: 1,
             ease: "power3.out",
         });
     }, [isMediaHover]);
