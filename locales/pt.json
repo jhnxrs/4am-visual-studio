@@ -1,47 +1,47 @@
 {
     "getInTouch": {
         "sectionTitle": "FALE CONOSCO",
-        "sectionText": "Vamos colaborar para transformar sua visão em uma narrativa visual envolvente, que impacta, inspira e se destaca.",
+        "sectionText": "Vamos colaborar para transformar sua visão em uma narrativa visual envolvente que impacta, inspira e se destaca.",
         "enquiries": "Orçamentos",
         "talk": "Fale com a gente"
     },
     "intro": {
         "sectionTitle": "INTRODUÇÃO",
-        "sectionText": "A 4AM é um estúdio de visualização arquitetônica que transforma projetos ambiciosos em experiências visuais refinadas, combinando elegância, criatividade e precisão técnica por meio de uma equipe multidisciplinar movida pela inovação e excelência.",
-        "heroTitle": "Visualizando espaços antes de existirem.",
-        "heroText": "Visualização arquitetônica de alto padrão, criada com criatividade e excelência técnica. Desenvolvida para valorizar projetos e comunicar todo o seu potencial."
+        "sectionText": "A 4AM é um estúdio de visualização arquitetônica especializado na criação de imagens e materiais de vendas para lançamentos imobiliários. Transformamos projetos em experiências visuais refinadas que comunicam valor, despertam desejo e ajudam construtoras a apresentarem seus empreendimentos com máximo impacto.",
+        "heroTitle": "Você constrói, nós cuidamos do resto.",
+        "heroText": "Transformamos projetos em desejo por meio de imagens e materiais de vendas desenvolvidos para impulsionar lançamentos imobiliários."
     },
     "services": {
         "sectionTitle": "SERVIÇOS",
-        "sectionText": "Nossos serviços unem inteligência de design, expertise técnica e narrativa visual para entregar experiências arquitetônicas impactantes e de alto nível.",
+        "sectionText": "Criamos imagens, identidade e materiais de vendas que comunicam valor, despertam desejo e fortalecem o posicionamento de empreendimentos imobiliários.",
         "cards": [
             {
                 "title": "Branding Imobiliário",
-                "description": "Criamos identidades visuais coesas para empreendimentos imobiliários, alinhando arquitetura, marca e narrativa para fortalecer a presença no mercado e a conexão emocional."
+                "description": "Criamos identidades visuais estratégicas para empreendimentos imobiliários, alinhando arquitetura, posicionamento e narrativa para fortalecer a percepção de valor e diferenciação no mercado."
             },
             {
                 "title": "Consultoria em Design",
-                "description": "Oferecemos orientação estratégica ao longo de todo o processo criativo, refinando conceitos, aprimorando a estética e garantindo clareza, consistência e propósito."
+                "description": "Oferecemos orientação estratégica durante o desenvolvimento do projeto, produzindo cenas ilustrativas, refinando materiais, atmosferas e decisões visuais para garantir clareza, consistência e impacto na comunicação."
             },
             {
                 "title": "Visualização Arquitetônica",
-                "description": "Produzimos imagens, filmes e experiências imersivas altamente realistas, que comunicam espaço, atmosfera e emoção com precisão e impacto visual."
+                "description": "Produzimos imagens, filmes e experiências visuais altamente realistas que comunicam o potencial do empreendimento, despertam desejo e apoiam o sucesso do lançamento."
             },
             {
-                "title": "Mídia",
-                "description": "Desenvolvemos conteúdos visuais sob medida para plataformas digitais, transformando projetos arquitetônicos em ativos de mídia envolventes e estratégicos."
+                "title": "Materiais de Vendas",
+                "description": "Desenvolvemos materiais visuais completos para apresentações, campanhas e plataformas digitais, transformando o projeto em uma ferramenta eficaz de vendas."
             }
         ]
     },
     "work": {
         "sectionTitle": "NOSSO TRABALHO",
         "sectionText": "PROJETOS RECENTES",
-        "caption": "Do conceito ao frame final, traduzimos ideias em experiências visuais poderosas que elevam projetos e definem identidades.",
-        "exploreMore": "Ver Mais"
+        "caption": "Cada projeto é uma história construída para comunicar valor, despertar desejo e apoiar o sucesso comercial de um lançamento.",
+        "exploreMore": "Ver mais"
     },
     "approach": {
         "sectionTitle": "ABORDAGEM",
-        "sectionText": "Para nós, cada detalhe importa. Luz, textura e proporção se unem para construir atmosfera e emoção. Não apenas visualizamos espaços — criamos experiências que dão significado à arquitetura."
+        "sectionText": "Acreditamos que a forma como um empreendimento é apresentado define como ele será percebido. Por isso, cada imagem é criada com intenção estratégica, combinando precisão técnica e sensibilidade estética para comunicar valor, despertar desejo e fortalecer o sucesso de cada lançamento."
     },
     "navbar": {
         "intro": "Introdução",
@@ -53,6 +53,6 @@
     },
     "404": "Oops! Parece que a página que você está tentando encontrar não existe.",
     "goHome": "Voltar",
-    "workPageTitle": "Explore nosso trabalho e descubra como forma, luz e detalhe se unem por meio da visualização arquitetônica em 3D.",
+    "workPageTitle": "Explore nosso trabalho e descubra como criamos histórias visuais que transformam projetos em desejo e apoiam o sucesso de cada lançamento.",
     "view": "Ver"
 }

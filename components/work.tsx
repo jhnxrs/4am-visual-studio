@@ -305,6 +305,7 @@ export const Work = (props: Props) => {
                             className="object-cover cursor-pointer"
                             draggable={false}
                             onClick={props.onClickImage}
+                            data-media={true}
                         />
                     ) : (
                         <HoverVideo src={props.src} />

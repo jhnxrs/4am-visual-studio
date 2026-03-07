@@ -1,47 +1,47 @@
 {
     "getInTouch": {
         "sectionTitle": "GET IN TOUCH",
-        "sectionText": "Let’s collaborate to turn your vision into a compelling visual narrative that resonates, inspires, and stands out.",
+        "sectionText": "Let’s collaborate to transform your vision into a compelling visual narrative that impacts, inspires, and stands out.",
         "enquiries": "Enquiries",
         "talk": "Talk"
     },
     "intro": {
         "sectionTitle": "INTRO",
-        "sectionText": "4AM is an architectural visualization studio that transforms ambitious projects into refined visual experiences, combining elegance, creativity, and technical precision through a multidisciplinary team driven by innovation and excellence.",
-        "heroTitle": "Visualizing spaces before they exist.",
-        "heroText": "High-end architectural visualization crafted with creativity and technical excellence. Designed to elevate projects and communicate their true potential."
+        "sectionText": "4AM is an architectural visualization studio specialized in creating images and sales materials for real estate launches. We transform projects into refined visual experiences that communicate value, spark desire, and help developers present their developments with maximum impact.",
+        "heroTitle": "You build it, we take care of the rest.",
+        "heroText": "We transform projects into desire through images and sales materials designed to drive successful real estate launches."
     },
     "services": {
         "sectionTitle": "SERVICES",
-        "sectionText": "Our services merge design intelligence, technical expertise, and visual storytelling to deliver impactful, high-end architectural experiences.",
+        "sectionText": "We create images, identity, and sales materials that communicate value, spark desire, and strengthen the positioning of real estate developments.",
         "cards": [
             {
-                "title": "Property Branding",
-                "description": "We craft cohesive visual identities for real estate developments, aligning architecture, branding, and narrative to strengthen market presence and emotional connection."
+                "title": "Real Estate Branding",
+                "description": "We create strategic visual identities for real estate developments, aligning architecture, positioning, and narrative to strengthen perceived value and differentiation in the market."
             },
             {
                 "title": "Design Consulting",
-                "description": "We provide strategic design guidance throughout the creative process, helping refine concepts, enhance aesthetics, and ensure clarity, consistency, and purpose."
+                "description": "We provide strategic guidance throughout the project development process, producing illustrative scenes and refining materials, atmospheres, and visual decisions to ensure clarity, consistency, and impact in communication."
             },
             {
                 "title": "Architectural Visualization",
-                "description": "We create highly realistic images, films, and immersive experiences that communicate space, atmosphere, and emotion with precision and visual impact."
+                "description": "We produce highly realistic images, films, and visual experiences that communicate the full potential of a development, spark desire, and support a successful launch."
             },
             {
-                "title": "Media",
-                "description": "We develop tailored visual content for digital platforms, transforming architectural projects into engaging media assets designed to captivate and communicate."
+                "title": "Sales Materials",
+                "description": "We develop complete visual materials for presentations, campaigns, and digital platforms, transforming the project into an effective sales tool."
             }
         ]
     },
     "work": {
         "sectionTitle": "OUR WORK",
         "sectionText": "RECENT PROJECTS",
-        "caption": "From concept to final frame, we translate ideas into powerful visual experiences that elevate projects and define identities.",
-        "exploreMore": "Explore More"
+        "caption": "Each project is a story crafted to communicate value, spark desire, and support the commercial success of a launch.",
+        "exploreMore": "Explore more"
     },
     "approach": {
         "sectionTitle": "APPROACH",
-        "sectionText": "For us, every detail matters. Light, texture, and proportion come together to shape atmosphere and emotion. We don’t just visualize spaces — we craft experiences that give meaning to architecture."
+        "sectionText": "We believe the way a development is presented defines how it will be perceived. That’s why every image is created with strategic intention, combining technical precision and aesthetic sensitivity to communicate value, spark desire, and strengthen the success of each launch."
     },
     "navbar": {
         "intro": "Intro",
@@ -53,6 +53,6 @@
     },
     "404": "Oops! Looks like the page you’re trying to find doesn’t exist.",
     "goHome": "Go home",
-    "workPageTitle": "Explore our work and discover how form, light, and detail come together through 3D architectural visualization.",
+    "workPageTitle": "Explore our work and discover how we create visual stories that transform projects into desire and support the success of every launch.",
     "view": "View"
 }

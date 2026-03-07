@@ -80,6 +80,13 @@ export const Navbar = ({ locale }: Props) => {
         { name: t('gallery'), href: "/work", external: true },
     ];
 
+    const moveScreenUp = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }
+
     return (
         <>
             {renderMenu && (
@@ -216,12 +223,17 @@ export const Navbar = ({ locale }: Props) => {
                     className="w-full flex justify-between items-center p-6 bg-transparent data-[dark=true]:bg-[#eee]"
                     data-dark={dark}
                 >
-                    <img
-                        src="/logo.png"
-                        className="w-20 filter brightness-0 data-[dark=false]:invert transition"
-                        alt="Logo"
-                        data-dark={dark}
-                    />
+                    <button
+                        className="m-0 p-0 cursor-pointer bg-transparent"
+                        onClick={() => moveScreenUp()}
+                    >
+                        <img
+                            src="/logo.png"
+                            className="w-20 filter brightness-0 data-[dark=false]:invert transition"
+                            alt="Logo"
+                            data-dark={dark}
+                        />
+                    </button>
 
                     <div className="flex items-center gap-6">
                         <LocaleSwitcher locale={locale} dark={dark} />
