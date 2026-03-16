@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -15,8 +15,38 @@ type Props = {
     locale: "pt" | "en";
 };
 
+type MediaBlockProps = {
+    type: "image" | "hoverVideo";
+    src: string;
+    alt?: string;
+    aspect: string;
+    onClickImage?: () => void;
+};
+
+const MediaBlock = (props: MediaBlockProps) => {
+    return (
+        <div className={`w-full relative ${props.aspect} overflow-hidden`}>
+            {props.type === "image" ? (
+                <Image
+                    src={props.src}
+                    alt={props.alt ?? ""}
+                    fill
+                    priority
+                    sizes="(min-width: 768px) 25vw, 100vw"
+                    className="object-cover cursor-pointer"
+                    draggable={false}
+                    onClick={props.onClickImage}
+                    data-media={true}
+                />
+            ) : (
+                <HoverVideo src={props.src} />
+            )}
+        </div>
+    );
+};
+
 export const Work = (props: Props) => {
-    const isPortuguese = props.locale === "pt";
+    void props;
     const { setFullscreenUrl, isMobile } = useApplicationState();
     const t = useTranslations("work");
 
@@ -42,7 +72,7 @@ export const Work = (props: Props) => {
 
             const contentH = contentWrap.getBoundingClientRect().height;
 
-            const extraScroll = vh * 2.0;
+            const extraScroll = vh * (isMobile ? 1.25 : 2.0);
 
             section.style.height = `${vh + contentH + extraScroll}px`;
             ScrollTrigger.refresh();
@@ -62,15 +92,16 @@ export const Work = (props: Props) => {
 
     useGSAP(
         () => {
-            if (!sectionRef.current) return;
+            if (!sectionRef.current || !videoRef.current || !overlayRef.current) return;
 
             gsap.set(videoRef.current, {
-                scale: 1.05,
-                filter: "blur(24px)",
+                scale: isMobile ? 1 : 1.05,
+                willChange: "transform",
             });
 
             gsap.set(overlayRef.current, {
                 opacity: 0.8,
+                willChange: "opacity",
             });
 
             const tl = gsap.timeline({
@@ -78,29 +109,41 @@ export const Work = (props: Props) => {
                     trigger: sectionRef.current,
                     start: "top bottom",
                     end: "bottom top",
-                    scrub: true,
+                    scrub: isMobile ? 0.4 : 0.8,
+                    fastScrollEnd: true,
                 },
             });
 
-            tl.to(
-                videoRef.current,
-                { filter: "blur(0px)", scale: 1, ease: "none" },
-                0.15
-            )
-                .to(overlayRef.current, { opacity: 0.6, ease: "none" }, 0.15)
-                .to(
+            if (isMobile) {
+                tl.to(
                     videoRef.current,
-                    { filter: "blur(24px)", scale: 1.05, ease: "none" },
-                    0.85
+                    { scale: 1.025, ease: "none", force3D: true },
+                    0
                 )
-                .to(overlayRef.current, { opacity: 0.8, ease: "none" }, 0.85);
+                    .to(overlayRef.current, { opacity: 0.68, ease: "none" }, 0.2)
+                    .to(videoRef.current, { scale: 1, ease: "none", force3D: true }, 1)
+                    .to(overlayRef.current, { opacity: 0.8, ease: "none" }, 1);
+            } else {
+                tl.to(
+                    videoRef.current,
+                    { filter: "blur(0px)", scale: 1, ease: "none", force3D: true },
+                    0.15
+                )
+                    .to(overlayRef.current, { opacity: 0.6, ease: "none" }, 0.15)
+                    .to(
+                        videoRef.current,
+                        { filter: "blur(24px)", scale: 1.05, ease: "none", force3D: true },
+                        0.85
+                    )
+                    .to(overlayRef.current, { opacity: 0.8, ease: "none" }, 0.85);
+            }
 
             return () => {
                 tl.scrollTrigger?.kill();
                 tl.kill();
             };
         },
-        { dependencies: [] }
+        { dependencies: [isMobile], revertOnUpdate: true }
     );
 
     useEffect(() => {
@@ -111,6 +154,16 @@ export const Work = (props: Props) => {
         video.muted = true;
         video.playsInline = true;
 
+        if (isMobile) {
+            video.loop = true;
+            const playPromise = video.play();
+
+            return () => {
+                playPromise?.catch(() => { });
+                video.pause();
+            };
+        }
+
         const playPromise = video.play();
         playPromise?.then(() => video.pause()).catch(() => { });
 
@@ -118,9 +171,17 @@ export const Work = (props: Props) => {
         let rafId: number | null = null;
 
         const update = () => {
-            if (!video.duration) return;
+            if (!video.duration || !Number.isFinite(video.duration)) {
+                rafId = null;
+                return;
+            }
 
             const delta = targetTime - video.currentTime;
+            if (Math.abs(delta) < 0.01) {
+                rafId = null;
+                return;
+            }
+
             const speed =
                 Math.abs(delta) > 0.25 ? 0.35 : Math.abs(delta) > 0.08 ? 0.25 : 0.15;
 
@@ -132,9 +193,10 @@ export const Work = (props: Props) => {
             trigger: section,
             start: "top top",
             end: "bottom bottom",
-            scrub: true,
+            scrub: 0.35,
+            fastScrollEnd: true,
             onUpdate: (self) => {
-                if (!video.duration) return;
+                if (!video.duration || !Number.isFinite(video.duration)) return;
                 targetTime = self.progress * video.duration;
                 if (!rafId) update();
             },
@@ -144,14 +206,18 @@ export const Work = (props: Props) => {
             st.kill();
             if (rafId) cancelAnimationFrame(rafId);
         };
-    }, []);
+    }, [isMobile]);
 
     useGSAP(
         () => {
             const words = wordsRef.current?.querySelectorAll("span");
             if (!words?.length) return;
 
-            gsap.set(words, { y: 40, opacity: 0 });
+            gsap.set(words, {
+                y: 40,
+                opacity: 0,
+                willChange: "transform, opacity",
+            });
 
             const mm = gsap.matchMedia();
 
@@ -160,13 +226,34 @@ export const Work = (props: Props) => {
                     mobile: "(max-width: 767px)",
                     desktop: "(min-width: 768px)",
                 },
-                () => {
+                (context) => {
+                    const { mobile } = context.conditions!;
+
+                    if (mobile) {
+                        gsap.to(words, {
+                            y: 0,
+                            opacity: 1,
+                            duration: 0.75,
+                            ease: "power3.out",
+                            stagger: 0.04,
+                            force3D: true,
+                            scrollTrigger: {
+                                trigger: contentRef.current,
+                                start: "top 84%",
+                                once: true,
+                            },
+                        });
+
+                        return;
+                    }
+
                     const tl = gsap.timeline({
                         scrollTrigger: {
                             trigger: contentRef.current,
-                            start: "top 90%",
-                            end: "10% 50%",
-                            scrub: true,
+                            start: "top 82%",
+                            end: () => `+=${window.innerHeight * 0.3}`,
+                            scrub: 0.6,
+                            fastScrollEnd: true,
                             invalidateOnRefresh: true,
                         },
                     });
@@ -174,7 +261,13 @@ export const Work = (props: Props) => {
                     tl.fromTo(
                         words,
                         { y: 40, opacity: 0 },
-                        { y: 0, opacity: 1, ease: "power3.out", stagger: 0.08 }
+                        {
+                            y: 0,
+                            opacity: 1,
+                            ease: "power3.out",
+                            stagger: 0.08,
+                            force3D: true,
+                        }
                     );
 
                     return () => {
@@ -198,6 +291,7 @@ export const Work = (props: Props) => {
                 opacity: 0.2,
                 y: 80,
                 willChange: "transform, opacity",
+                force3D: true,
             });
 
             const mm = gsap.matchMedia();
@@ -222,6 +316,7 @@ export const Work = (props: Props) => {
                                         duration: 0.8,
                                         stagger: 0.15,
                                         ease: "power3.out",
+                                        force3D: true,
                                     }),
                             }
                             : {
@@ -233,6 +328,7 @@ export const Work = (props: Props) => {
                                         duration: 0.8,
                                         stagger: 0.15,
                                         ease: "power3.out",
+                                        force3D: true,
                                     }),
                                 onLeave: (batch) =>
                                     gsap.to(batch, {
@@ -240,6 +336,7 @@ export const Work = (props: Props) => {
                                         y: -80,
                                         duration: 0.4,
                                         ease: "power3.in",
+                                        force3D: true,
                                     }),
                                 onEnterBack: (batch) =>
                                     gsap.to(batch, {
@@ -248,6 +345,7 @@ export const Work = (props: Props) => {
                                         duration: 0.8,
                                         stagger: 0.15,
                                         ease: "power3.out",
+                                        force3D: true,
                                     }),
                                 onLeaveBack: (batch) =>
                                     gsap.to(batch, {
@@ -255,6 +353,7 @@ export const Work = (props: Props) => {
                                         y: 80,
                                         duration: 0.4,
                                         ease: "power3.in",
+                                        force3D: true,
                                     }),
                             }),
                     });
@@ -285,38 +384,8 @@ export const Work = (props: Props) => {
         return () => ro.disconnect();
     }, [text]);
 
-    const Media = useMemo(() => {
-        return function MediaBlock(props: {
-            type: "image" | "hoverVideo";
-            src: string;
-            alt?: string;
-            aspect: string;
-            onClickImage?: () => void;
-        }) {
-            return (
-                <div className={`w-full relative ${props.aspect} overflow-hidden`}>
-                    {props.type === "image" ? (
-                        <Image
-                            src={props.src}
-                            alt={props.alt ?? ""}
-                            fill
-                            priority
-                            sizes="(min-width: 768px) 25vw, 100vw"
-                            className="object-cover cursor-pointer"
-                            draggable={false}
-                            onClick={props.onClickImage}
-                            data-media={true}
-                        />
-                    ) : (
-                        <HoverVideo src={props.src} />
-                    )}
-                </div>
-            );
-        };
-    }, []);
-
     return (
-        <section ref={sectionRef} className="relative" id="approach">
+        <section ref={sectionRef} className="relative" id="work">
             <div ref={stickyRef} className="sticky top-0 h-screen w-screen overflow-hidden">
                 <video
                     ref={videoRef}
@@ -344,7 +413,7 @@ export const Work = (props: Props) => {
                                 data-label
                                 className="absolute top-4 left-0 text-white/80 tracking-wide text-xs"
                             >
-                                02<span className="text-white/40">//</span>
+                                02<span className="text-white/40">{"//"}</span>
                                 {t("sectionTitle")}
                             </p>
 
@@ -372,14 +441,14 @@ export const Work = (props: Props) => {
                                     {t("caption")}
                                 </p>
 
-                                <Media
+                                <MediaBlock
                                     type="image"
                                     src="/work01.webp"
                                     aspect="aspect-[4/3] md:aspect-[3/4]"
                                     onClickImage={() => setFullscreenUrl("/work01.webp")}
                                 />
 
-                                <Media
+                                <MediaBlock
                                     type={isMobile ? "image" : "hoverVideo"}
                                     src={isMobile ? "/work02.webp" : "/work02-vid.mp4"}
                                     aspect="aspect-[4/3] md:aspect-[3/4]"
@@ -388,14 +457,14 @@ export const Work = (props: Props) => {
                             </div>
 
                             <div className="work-column flex flex-col gap-5 w-full">
-                                <Media
+                                <MediaBlock
                                     type="image"
                                     src="/work03.webp"
                                     aspect="aspect-[3/4] md:aspect-[2/3]"
                                     onClickImage={() => setFullscreenUrl("/work03.webp")}
                                 />
 
-                                <Media
+                                <MediaBlock
                                     type="image"
                                     src="/work04.webp"
                                     aspect="aspect-[4/3] md:aspect-[3/4]"
@@ -404,21 +473,21 @@ export const Work = (props: Props) => {
                             </div>
 
                             <div className="work-column flex flex-col gap-5 w-full">
-                                <Media
+                                <MediaBlock
                                     type="image"
                                     src="/work05.webp"
                                     aspect="aspect-[4/3] md:aspect-[3/4]"
                                     onClickImage={() => setFullscreenUrl("/work05.webp")}
                                 />
 
-                                <Media
+                                <MediaBlock
                                     type="image"
                                     src="/work06.webp"
                                     aspect="aspect-[16/9] md:aspect-[4/3]"
                                     onClickImage={() => setFullscreenUrl("/work06.webp")}
                                 />
 
-                                <Media
+                                <MediaBlock
                                     type={isMobile ? "image" : "hoverVideo"}
                                     src={isMobile ? "/work07.webp" : "/work07-vid.mp4"}
                                     aspect="aspect-[16/9] md:aspect-[4/3]"

@@ -2,6 +2,7 @@ import { ApplicationStateProvider } from "@/providers/application-state";
 import { CustomCursor } from "@/providers/custom-cursor";
 import { FullscreenProvider } from "@/providers/fullscreen";
 import { SmoothScroll } from "@/providers/smooth-scroll";
+import { WhatsappButton } from "@/providers/whatsapp-button";
 import { NextIntlClientProvider } from "next-intl";
 
 type Props = {
@@ -15,6 +16,7 @@ export const Providers = (props: Props) => {
                 <ApplicationStateProvider>
                     <FullscreenProvider>
                         <CustomCursor />
+                        <WhatsappButton />
                         {props.children}
                     </FullscreenProvider>
                 </ApplicationStateProvider>

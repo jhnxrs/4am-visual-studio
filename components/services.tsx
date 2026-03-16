@@ -23,8 +23,16 @@ export const Services = () => {
 
         if (!words || !cards?.length) return;
 
-        gsap.set(words, { y: 40, opacity: 0 });
-        gsap.set(cards, { y: 60, opacity: 0 });
+        gsap.set(words, {
+            y: 40,
+            opacity: 0,
+            willChange: "transform, opacity",
+        });
+        gsap.set(cards, {
+            y: 60,
+            opacity: 0,
+            willChange: "transform, opacity",
+        });
 
         const mm = gsap.matchMedia();
 
@@ -36,12 +44,45 @@ export const Services = () => {
             (context) => {
                 const { mobile } = context.conditions!;
 
+                if (mobile) {
+                    gsap.to(words, {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.75,
+                        ease: "power3.out",
+                        stagger: 0.04,
+                        force3D: true,
+                        scrollTrigger: {
+                            trigger: "#services",
+                            start: "top 82%",
+                            once: true,
+                        },
+                    });
+
+                    gsap.to(cards, {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.8,
+                        ease: "power3.out",
+                        stagger: 0.12,
+                        force3D: true,
+                        scrollTrigger: {
+                            trigger: cards[0].parentElement,
+                            start: "top 88%",
+                            once: true,
+                        },
+                    });
+
+                    return;
+                }
+
                 gsap.timeline({
                     scrollTrigger: {
                         trigger: "#services",
-                        start: "top 60%",
-                        end: mobile ? "+=200" : "+=400",
-                        scrub: true,
+                        start: "top 68%",
+                        end: () => `+=${window.innerHeight * 0.32}`,
+                        scrub: 0.6,
+                        fastScrollEnd: true,
                         invalidateOnRefresh: true,
                     },
                 }).fromTo(
@@ -52,6 +93,7 @@ export const Services = () => {
                         opacity: 1,
                         ease: "power3.out",
                         stagger: 0.08,
+                        force3D: true,
                     }
                 );
 
@@ -62,12 +104,14 @@ export const Services = () => {
                         y: 0,
                         opacity: 1,
                         ease: "power3.out",
-                        stagger: 0.25,
+                        stagger: 0.18,
+                        force3D: true,
                         scrollTrigger: {
                             trigger: cards[0].parentElement,
-                            start: "top 60%",
-                            end: () => `+=${window.innerHeight * 0.25}`,
-                            scrub: true,
+                            start: "top 72%",
+                            end: () => `+=${window.innerHeight * 0.28}`,
+                            scrub: 0.6,
+                            fastScrollEnd: true,
                             invalidateOnRefresh: true,
                         },
                     }
@@ -101,7 +145,7 @@ export const Services = () => {
     return (
         <section id="services" className="w-screen py-32 px-12 relative bg-[#eee] z-20 flex flex-col gap-12">
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
-                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">03<span className="text-black/40">//</span>{t('sectionTitle')}</p>
+                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">03<span className="text-black/40">{"//"}</span>{t('sectionTitle')}</p>
                 {text.split(' ').map((word, index) => {
                     const isFirstWord = index === 0;
 

@@ -24,7 +24,10 @@ const MOBILE_BREAKPOINT = 768;
 
 export const ApplicationStateProvider = ({ children }: { children: ReactNode }) => {
     const [dark, setDark] = useState<boolean>(false);
-    const [isMobile, setIsMobile] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState<boolean>(() => {
+        if (typeof window === "undefined") return false;
+        return window.innerWidth < MOBILE_BREAKPOINT;
+    });
     const [fullscreenUrl, setFullscreenUrl] = useState<string | undefined>(undefined);
 
     const _setFullscreenUrl = (url?: string) => {
@@ -41,7 +44,6 @@ export const ApplicationStateProvider = ({ children }: { children: ReactNode }) 
             setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
         }
         mql.addEventListener("change", onChange)
-        setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
         return () => mql.removeEventListener("change", onChange)
     }, [])
 

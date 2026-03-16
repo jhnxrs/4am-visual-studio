@@ -16,31 +16,67 @@ export const Intro = () => {
         const words = wordsRef.current?.querySelectorAll("span");
         if (!words?.length) return;
 
-        gsap.set(words, { y: 40, opacity: 0 });
+        gsap.set(words, {
+            y: 40,
+            opacity: 0,
+            willChange: "transform, opacity",
+        });
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: "#intro",
-                start: "top 60%",
-                end: () => `+=${window.innerHeight * 0.35}`,
-                scrub: true,
-                invalidateOnRefresh: true
+        const mm = gsap.matchMedia();
+
+        mm.add(
+            {
+                mobile: "(max-width: 767px)",
+                desktop: "(min-width: 768px)",
             },
-        });
+            (context) => {
+                const { mobile } = context.conditions!;
 
-        tl.to(words, {
-            y: 0,
-            opacity: 1,
-            ease: "power3.out",
-            stagger: 0.08,
-        });
+                if (mobile) {
+                    gsap.to(words, {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.75,
+                        ease: "power3.out",
+                        stagger: 0.04,
+                        force3D: true,
+                        scrollTrigger: {
+                            trigger: "#intro",
+                            start: "top 82%",
+                            once: true,
+                        },
+                    });
 
-        ScrollTrigger.refresh();
+                    return;
+                }
 
-        return () => {
-            tl.scrollTrigger?.kill();
-            tl.kill();
-        };
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#intro",
+                        start: "top 70%",
+                        end: () => `+=${window.innerHeight * 0.3}`,
+                        scrub: 0.6,
+                        fastScrollEnd: true,
+                        invalidateOnRefresh: true,
+                    },
+                });
+
+                tl.to(words, {
+                    y: 0,
+                    opacity: 1,
+                    ease: "power3.out",
+                    stagger: 0.08,
+                    force3D: true,
+                });
+
+                return () => {
+                    tl.scrollTrigger?.kill();
+                    tl.kill();
+                };
+            }
+        );
+
+        return () => mm.revert();
     }, [text]);
 
     useGSAP(() => {
@@ -96,7 +132,7 @@ export const Intro = () => {
             </div>
 
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
-                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">01<span className="text-black/40">//</span>{t("sectionTitle")}</p>
+                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">01<span className="text-black/40">{"//"}</span>{t("sectionTitle")}</p>
                 {text.split(' ').map((word, index) => {
                     const isFirstWord = index === 0;
 

@@ -32,8 +32,16 @@ export const GetInTouch = (props: Props) => {
                 desktop: "(min-width: 768px)",
             },
             () => {
-                gsap.set(words, { y: 40, opacity: 0 });
-                gsap.set(contact, { y: 20, opacity: 0 });
+                gsap.set(words, {
+                    y: 40,
+                    opacity: 0,
+                    willChange: "transform, opacity",
+                });
+                gsap.set(contact, {
+                    y: 20,
+                    opacity: 0,
+                    willChange: "transform, opacity",
+                });
 
                 const tl = gsap.timeline({ paused: true });
 
@@ -41,15 +49,17 @@ export const GetInTouch = (props: Props) => {
                     y: 0,
                     opacity: 1,
                     ease: "power3.out",
-                    stagger: 0.06,
-                    duration: 0.6,
+                    stagger: 0.045,
+                    duration: 0.7,
+                    force3D: true,
                 }).to(
                     contact,
                     {
                         y: 0,
                         opacity: 1,
                         ease: "power3.out",
-                        duration: 0.5,
+                        duration: 0.55,
+                        force3D: true,
                     },
                     "-=0.15"
                 );
@@ -57,7 +67,7 @@ export const GetInTouch = (props: Props) => {
                 const st = gsap.to({}, {
                     scrollTrigger: {
                         trigger: root,
-                        start: "top 90%",
+                        start: "top 88%",
                         once: true,
                         onEnter: () => tl.play(),
                         onEnterBack: () => tl.play(),
@@ -97,7 +107,7 @@ export const GetInTouch = (props: Props) => {
     return (
         <section id="get-in-touch" className="w-screen pt-32 pb-48 bg-[#eee] px-12 relative z-20">
             <div ref={wordsRef} className="relative flex flex-row items-center flex-wrap gap-2">
-                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">05<span className="text-black/40">//</span>{t('sectionTitle')}</p>
+                <p data-label className="absolute top-4 left-0 text-black/80 tracking-wide text-xs">05<span className="text-black/40">{"//"}</span>{t('sectionTitle')}</p>
                 {text.split(' ').map((word, index) => {
                     const isFirstWord = index === 0;
 
