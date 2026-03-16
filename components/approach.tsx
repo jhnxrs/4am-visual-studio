@@ -96,16 +96,7 @@ export const Approach = () => {
 
         video.muted = true
         video.playsInline = true
-
-        if (isMobile) {
-            video.loop = true
-            const playPromise = video.play()
-
-            return () => {
-                playPromise?.catch(() => { })
-                video.pause()
-            }
-        }
+        video.loop = false
 
         const playPromise = video.play()
 
@@ -159,7 +150,7 @@ export const Approach = () => {
             st.kill()
             if (rafId) cancelAnimationFrame(rafId)
         }
-    }, [isMobile])
+    }, [])
 
 
     useGSAP(() => {

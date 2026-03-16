@@ -153,16 +153,7 @@ export const Work = (props: Props) => {
 
         video.muted = true;
         video.playsInline = true;
-
-        if (isMobile) {
-            video.loop = true;
-            const playPromise = video.play();
-
-            return () => {
-                playPromise?.catch(() => { });
-                video.pause();
-            };
-        }
+        video.loop = false;
 
         const playPromise = video.play();
         playPromise?.then(() => video.pause()).catch(() => { });
@@ -206,7 +197,7 @@ export const Work = (props: Props) => {
             st.kill();
             if (rafId) cancelAnimationFrame(rafId);
         };
-    }, [isMobile]);
+    }, []);
 
     useGSAP(
         () => {
