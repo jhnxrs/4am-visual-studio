@@ -18,10 +18,53 @@ export const setupScrollScrubVideo = ({
     video.muted = true;
     video.playsInline = true;
     video.loop = false;
-    video.disablePictureInPicture = true;
 
     const playPromise = video.play();
     playPromise?.then(() => video.pause()).catch(() => { });
+
+    if (!isAndroid) {
+        let targetTime = 0;
+        let rafId: number | null = null;
+
+        const update = () => {
+            if (!video.duration || !Number.isFinite(video.duration)) {
+                rafId = null;
+                return;
+            }
+
+            const delta = targetTime - video.currentTime;
+            if (Math.abs(delta) < 0.01) {
+                rafId = null;
+                return;
+            }
+
+            const speed =
+                Math.abs(delta) > 0.25 ? 0.35 : Math.abs(delta) > 0.08 ? 0.25 : 0.15;
+
+            video.currentTime += delta * speed;
+            rafId = requestAnimationFrame(update);
+        };
+
+        const trigger = ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: "bottom bottom",
+            scrub,
+            fastScrollEnd: true,
+            onUpdate: (self) => {
+                if (!video.duration || !Number.isFinite(video.duration)) return;
+                targetTime = self.progress * video.duration;
+                if (!rafId) update();
+            },
+        });
+
+        return () => {
+            trigger.kill();
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }
+
+    video.disablePictureInPicture = true;
 
     let targetTime = 0;
     let rafId: number | null = null;
