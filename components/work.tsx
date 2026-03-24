@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useApplicationState } from "@/providers/application-state";
 import { HoverVideo } from "@/components/hover-video";
+import { setupScrollScrubVideo } from "@/lib/scroll-scrub-video";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,7 +32,6 @@ const MediaBlock = (props: MediaBlockProps) => {
                     src={props.src}
                     alt={props.alt ?? ""}
                     fill
-                    priority
                     sizes="(min-width: 768px) 25vw, 100vw"
                     className="object-cover cursor-pointer"
                     draggable={false}
@@ -47,7 +47,7 @@ const MediaBlock = (props: MediaBlockProps) => {
 
 export const Work = (props: Props) => {
     void props;
-    const { setFullscreenUrl, isMobile } = useApplicationState();
+    const { setFullscreenUrl, isMobile, isAndroid } = useApplicationState();
     const t = useTranslations("work");
 
     const sectionRef = useRef<HTMLElement>(null);
@@ -151,53 +151,13 @@ export const Work = (props: Props) => {
         const section = sectionRef.current;
         if (!video || !section) return;
 
-        video.muted = true;
-        video.playsInline = true;
-        video.loop = false;
-
-        const playPromise = video.play();
-        playPromise?.then(() => video.pause()).catch(() => { });
-
-        let targetTime = 0;
-        let rafId: number | null = null;
-
-        const update = () => {
-            if (!video.duration || !Number.isFinite(video.duration)) {
-                rafId = null;
-                return;
-            }
-
-            const delta = targetTime - video.currentTime;
-            if (Math.abs(delta) < 0.01) {
-                rafId = null;
-                return;
-            }
-
-            const speed =
-                Math.abs(delta) > 0.25 ? 0.35 : Math.abs(delta) > 0.08 ? 0.25 : 0.15;
-
-            video.currentTime += delta * speed;
-            rafId = requestAnimationFrame(update);
-        };
-
-        const st = ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: "bottom bottom",
+        return setupScrollScrubVideo({
+            section,
+            video,
             scrub: 0.35,
-            fastScrollEnd: true,
-            onUpdate: (self) => {
-                if (!video.duration || !Number.isFinite(video.duration)) return;
-                targetTime = self.progress * video.duration;
-                if (!rafId) update();
-            },
+            isAndroid,
         });
-
-        return () => {
-            st.kill();
-            if (rafId) cancelAnimationFrame(rafId);
-        };
-    }, []);
+    }, [isAndroid]);
 
     useGSAP(
         () => {
@@ -228,6 +188,7 @@ export const Work = (props: Props) => {
                             ease: "power3.out",
                             stagger: 0.04,
                             force3D: true,
+                            clearProps: "willChange",
                             scrollTrigger: {
                                 trigger: contentRef.current,
                                 start: "top 84%",
@@ -308,6 +269,7 @@ export const Work = (props: Props) => {
                                         stagger: 0.15,
                                         ease: "power3.out",
                                         force3D: true,
+                                        clearProps: "willChange",
                                     }),
                             }
                             : {
@@ -383,6 +345,7 @@ export const Work = (props: Props) => {
                     src="/asset1.mp4"
                     muted
                     playsInline
+                    webkit-playsinline="true"
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

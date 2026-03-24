@@ -6,10 +6,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
 import { useTranslations } from "next-intl"
 import { useApplicationState } from "@/providers/application-state"
+import { setupScrollScrubVideo } from "@/lib/scroll-scrub-video"
+
+gsap.registerPlugin(ScrollTrigger)
 
 export const Approach = () => {
     const t = useTranslations('approach');
-    const { isMobile } = useApplicationState();
+    const { isMobile, isAndroid } = useApplicationState();
     const sectionRef = useRef<HTMLElement>(null)
     const videoRef = useRef<HTMLVideoElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
@@ -94,63 +97,13 @@ export const Approach = () => {
         const section = sectionRef.current
         if (!video || !section) return
 
-        video.muted = true
-        video.playsInline = true
-        video.loop = false
-
-        const playPromise = video.play()
-
-        if (playPromise !== undefined) {
-            playPromise
-                .then(() => {
-                    video.pause()
-                })
-                .catch(() => {
-                })
-        }
-
-        let targetTime = 0
-        let rafId: number | null = null
-
-        const update = () => {
-            if (!video.duration || !Number.isFinite(video.duration)) {
-                rafId = null
-                return
-            }
-
-            const delta = targetTime - video.currentTime
-            if (Math.abs(delta) < 0.01) {
-                rafId = null
-                return
-            }
-
-            const speed =
-                Math.abs(delta) > 0.25 ? 0.35 :
-                    Math.abs(delta) > 0.08 ? 0.25 :
-                        0.15
-
-            video.currentTime += delta * speed
-            rafId = requestAnimationFrame(update)
-        }
-
-        const st = ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: "bottom bottom",
+        return setupScrollScrubVideo({
+            section,
+            video,
             scrub: 0.35,
-            fastScrollEnd: true,
-            onUpdate: (self) => {
-                if (!video.duration || !Number.isFinite(video.duration)) return
-                targetTime = self.progress * video.duration
-                if (!rafId) update()
-            },
+            isAndroid,
         })
-
-        return () => {
-            st.kill()
-            if (rafId) cancelAnimationFrame(rafId)
-        }
-    }, [])
+    }, [isAndroid])
 
 
     useGSAP(() => {
@@ -181,6 +134,7 @@ export const Approach = () => {
                         ease: "power3.out",
                         stagger: 0.04,
                         force3D: true,
+                        clearProps: "willChange",
                         scrollTrigger: {
                             trigger: contentRef.current,
                             start: "top 84%",

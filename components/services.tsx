@@ -165,7 +165,6 @@ export const Services = () => {
                             src="/branding.webp"
                             alt=""
                             fill
-                            priority
                             sizes="(min-width: 768px) 25vw, 100vw"
                             className="object-cover"
                         />
@@ -182,7 +181,6 @@ export const Services = () => {
                             src="/design.webp"
                             alt=""
                             fill
-                            priority
                             sizes="(min-width: 768px) 25vw, 100vw"
                             className="object-cover"
                         />
@@ -199,7 +197,6 @@ export const Services = () => {
                             src="/arch.webp"
                             alt=""
                             fill
-                            priority
                             sizes="(min-width: 768px) 25vw, 100vw"
                             className="object-cover"
                         />
@@ -216,7 +213,6 @@ export const Services = () => {
                             src="/media.webp"
                             alt=""
                             fill
-                            priority
                             sizes="(min-width: 768px) 25vw, 100vw"
                             className="object-cover"
                         />

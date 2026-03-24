@@ -7,6 +7,7 @@ import {
     ReactNode,
     useEffect,
 } from "react";
+import { isAndroidDevice } from "@/lib/is-android";
 
 type ApplicationStateContext = {
     dark: boolean;
@@ -14,6 +15,7 @@ type ApplicationStateContext = {
     setDark: (dark: boolean) => void;
     setFullscreenUrl: (url?: string) => void;
     isMobile: boolean;
+    isAndroid: boolean;
 };
 
 const ApplicationStateContext = createContext<ApplicationStateContext | undefined>(
@@ -28,6 +30,7 @@ export const ApplicationStateProvider = ({ children }: { children: ReactNode }) 
         if (typeof window === "undefined") return false;
         return window.innerWidth < MOBILE_BREAKPOINT;
     });
+    const [isAndroid, setIsAndroid] = useState<boolean>(() => isAndroidDevice());
     const [fullscreenUrl, setFullscreenUrl] = useState<string | undefined>(undefined);
 
     const _setFullscreenUrl = (url?: string) => {
@@ -42,13 +45,15 @@ export const ApplicationStateProvider = ({ children }: { children: ReactNode }) 
         const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
         const onChange = () => {
             setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+            setIsAndroid(isAndroidDevice())
         }
         mql.addEventListener("change", onChange)
+        onChange()
         return () => mql.removeEventListener("change", onChange)
     }, [])
 
     return (
-        <ApplicationStateContext.Provider value={{ dark, isMobile, fullscreenUrl, setFullscreenUrl: _setFullscreenUrl, setDark: _setDark }}>
+        <ApplicationStateContext.Provider value={{ dark, isMobile, isAndroid, fullscreenUrl, setFullscreenUrl: _setFullscreenUrl, setDark: _setDark }}>
             {children}
         </ApplicationStateContext.Provider>
     );
