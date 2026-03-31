@@ -1,6 +1,8 @@
+import { AnimationController } from "@/providers/animation-controller";
 import { ApplicationStateProvider } from "@/providers/application-state";
 import { CustomCursor } from "@/providers/custom-cursor";
 import { FullscreenProvider } from "@/providers/fullscreen";
+import { ScrollProvider } from "@/providers/scroll-provider";
 import { SmoothScroll } from "@/providers/smooth-scroll";
 import { WhatsappButton } from "@/providers/whatsapp-button";
 import { NextIntlClientProvider } from "next-intl";
@@ -15,9 +17,13 @@ export const Providers = (props: Props) => {
             <NextIntlClientProvider>
                 <ApplicationStateProvider>
                     <FullscreenProvider>
-                        <CustomCursor />
-                        <WhatsappButton />
-                        {props.children}
+                        <ScrollProvider>
+                            <AnimationController>
+                                <CustomCursor />
+                                <WhatsappButton />
+                                {props.children}
+                            </AnimationController>
+                        </ScrollProvider>
                     </FullscreenProvider>
                 </ApplicationStateProvider>
             </NextIntlClientProvider>
