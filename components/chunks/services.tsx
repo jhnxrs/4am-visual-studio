@@ -8,17 +8,15 @@ import {
     useRef,
     useState,
 } from "react";
-import { useScreenY } from "@/providers/scroll-provider";
 import Image from "next/image";
+import { useAppState } from "@/stores/app-state";
+import { clamp } from "@/lib/utilities";
 
-const clamp = (value: number, min: number, max: number) =>
-    Math.min(max, Math.max(min, value));
-
-export const ServicesV2 = () => {
+export const Services = () => {
     const t = useTranslations('services');
     const text = t("sectionText");
 
-    const screenY = useScreenY();
+    const screenY = useAppState((state) => state.screenY);
 
     const shouldStartRendering = useMemo(() => {
         return screenY > 0.7;
@@ -55,8 +53,8 @@ export const ServicesV2 = () => {
     ];
 
     const getCardStyle = (index: number) => {
-        const cardStart = range.start + 0.35 + index * 0.1;
-        const cardDuration = 0.28;
+        const cardStart = range.start + index * 0.1;
+        const cardDuration = 0.18;
 
         const progress = clamp(
             (screenY - cardStart) / cardDuration,
@@ -81,21 +79,29 @@ export const ServicesV2 = () => {
         if (!introEl || !workEl || !sectionEl) return;
 
         const calculateRange = () => {
+            const sectionEl = sectionRef.current;
+            if (!sectionEl) return;
+
             const viewportHeight = window.innerHeight || 1;
+            const sectionRect = sectionEl.getBoundingClientRect();
+            const sectionTopPx = window.scrollY + sectionRect.top;
+            const sectionHeightPx = sectionEl.offsetHeight;
 
-            const introUnits = introEl.offsetHeight / viewportHeight;
-            const workUnits = workEl.offsetHeight / viewportHeight;
+            const startOffsetPx = viewportHeight * 0.5;
 
-            const startOffsetPx = 500;
-            const animationDistancePx = 500;
+            // animation uses a fraction of the section height
+            const animationSpanPx = Math.min(
+                Math.max(sectionHeightPx * 0.4, viewportHeight * 0.32),
+                viewportHeight * 0.65
+            );
 
-            const startOffsetUnits = startOffsetPx / viewportHeight;
-            const animationDistanceUnits = animationDistancePx / viewportHeight;
+            const start = (sectionTopPx - startOffsetPx) / viewportHeight;
+            const end = (sectionTopPx - startOffsetPx + animationSpanPx) / viewportHeight;
 
-            const start = (1 + introUnits + workUnits) - startOffsetUnits;
-            const end = start + animationDistanceUnits;
-
-            setRange({ start, end });
+            setRange({
+                start,
+                end: Math.max(start + 0.01, end),
+            });
         };
 
         calculateRange();
@@ -105,6 +111,7 @@ export const ServicesV2 = () => {
         });
 
         resizeObserver.observe(introEl);
+        resizeObserver.observe(sectionEl);
         resizeObserver.observe(workEl);
 
         window.addEventListener("resize", calculateRange);

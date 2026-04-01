@@ -1,6 +1,6 @@
 "use client";
 
-import { useApplicationState } from "@/providers/application-state";
+import { useAppState } from "@/stores/app-state";
 import { useRef } from "react";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 }
 
 export const HoverVideo = (props: Props) => {
-    const { setFullscreenUrl } = useApplicationState();
+    const setFullscreenUrl = useAppState((state) => state.setFullscreenUrl);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     const handleMouseEnter = () => {
@@ -16,9 +16,7 @@ export const HoverVideo = (props: Props) => {
         if (!video) return;
 
         video.currentTime = 0;
-        video.play().catch(() => {
-            // Safari may block play if something is off
-        });
+        video.play().catch(() => { });
     };
 
     const handleMouseLeave = () => {

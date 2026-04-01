@@ -1,36 +1,18 @@
 "use client";
 
 import { ReactLenis } from "lenis/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useMemo } from "react";
-import { isAndroidDevice } from "@/lib/is-android";
 
-gsap.registerPlugin(ScrollTrigger);
-gsap.ticker.lagSmoothing(0);
+type Props = {
+    children: React.ReactNode;
+}
 
-export function SmoothScroll({ children }: { children: React.ReactNode }) {
-    const isAndroid = useMemo(() => isAndroidDevice(), []);
-
-    useEffect(() => {
-        ScrollTrigger.refresh();
-    }, [isAndroid]);
-
-    if (isAndroid) {
-        return <>{children}</>;
-    }
-
+export const SmoothScrollProvider = (props: Props) => {
     return (
         <ReactLenis
             root
-            options={{
-                lerp: 0.1,
-            }}
-            onScroll={() => {
-                ScrollTrigger.update();
-            }}
+            options={{ lerp: 0.1 }}
         >
-            {children}
+            {props.children}
         </ReactLenis>
     );
 }

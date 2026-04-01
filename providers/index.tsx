@@ -1,10 +1,9 @@
-import { AnimationController } from "@/providers/animation-controller";
-import { ApplicationStateProvider } from "@/providers/application-state";
-import { CustomCursor } from "@/providers/custom-cursor";
+import { AppStateProvider } from "@/providers/app-state";
+import { CustomCursor } from "@/components/global/custom-cursor";
 import { FullscreenProvider } from "@/providers/fullscreen";
-import { ScrollProvider } from "@/providers/scroll-provider";
-import { SmoothScroll } from "@/providers/smooth-scroll";
-import { WhatsappButton } from "@/providers/whatsapp-button";
+import { ScrollTrackerProvider } from "@/providers/scroll-tracker";
+import { SmoothScrollProvider } from "@/providers/smooth-scroll";
+import { WhatsappButton } from "@/components/global/whatsapp-button";
 import { NextIntlClientProvider } from "next-intl";
 
 type Props = {
@@ -13,20 +12,17 @@ type Props = {
 
 export const Providers = (props: Props) => {
     return (
-        <SmoothScroll>
+        <SmoothScrollProvider>
             <NextIntlClientProvider>
-                <ApplicationStateProvider>
-                    <FullscreenProvider>
-                        <ScrollProvider>
-                            <AnimationController>
-                                <CustomCursor />
-                                <WhatsappButton />
-                                {props.children}
-                            </AnimationController>
-                        </ScrollProvider>
-                    </FullscreenProvider>
-                </ApplicationStateProvider>
+                <FullscreenProvider>
+                    <ScrollTrackerProvider>
+                        <CustomCursor />
+                        <WhatsappButton />
+
+                        {props.children}
+                    </ScrollTrackerProvider>
+                </FullscreenProvider>
             </NextIntlClientProvider>
-        </SmoothScroll>
+        </SmoothScrollProvider>
     )
 }

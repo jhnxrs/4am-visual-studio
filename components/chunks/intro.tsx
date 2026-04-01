@@ -1,5 +1,7 @@
 "use client";
 
+import { clamp } from "@/lib/utilities";
+import { useAppState } from "@/stores/app-state";
 import { useTranslations } from "next-intl";
 import {
     useEffect,
@@ -8,20 +10,15 @@ import {
     useRef,
     useState,
 } from "react";
-import { useScreenY, useScrollY } from "@/providers/scroll-provider";
 
-const clamp = (value: number, min: number, max: number) =>
-    Math.min(max, Math.max(min, value));
-
-export const IntroV2 = () => {
+export const Intro = () => {
     const t = useTranslations("intro");
     const text = t("sectionText");
 
-    const screenY = useScreenY();
-    const scrollY = useScrollY();
+    const screenY = useAppState((state) => state.screenY);
 
     const shouldStartRendering = useMemo(() => {
-        return screenY > 0.7;
+        return screenY > 0.6;
     }, [screenY]);
 
     const [showUpperText, setShowUpperText] = useState(false);
@@ -72,8 +69,8 @@ export const IntroV2 = () => {
         );
         if (!wordEls.length) return;
 
-        const animationStart = 0.7;
-        const animationEnd = 1.05;
+        const animationStart = 0.55;
+        const animationEnd = 0.8;
         const hiddenY = 18;
         const wordDuration = 0.2;
 
@@ -136,7 +133,7 @@ export const IntroV2 = () => {
             <div
                 id="intro-upper-text"
                 className={[
-                    "-top-30 absolute px-6 z-20 flex flex-col gap-2 md:gap-1 w-full left-1/2 transform -translate-x-1/2 transition-opacity duration-700 will-change-[opacity]",
+                    "-top-40 md:-top-30 absolute px-6 z-20 flex flex-col gap-2 md:gap-1 w-full left-1/2 transform -translate-x-1/2 transition-opacity duration-700 will-change-[opacity]",
                     showUpperText ? "opacity-100" : "opacity-0",
                 ].join(" ")}
             >

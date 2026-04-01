@@ -1,19 +1,15 @@
 "use client";
 
-import { useScreenY } from "@/providers/scroll-provider";
+import { useAppState } from "@/stores/app-state";
 import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-
-type Props = {
-    locale: "pt" | "en";
-};
 
 const TOTAL_FRAMES = 60;
 
 const clamp = (value: number, min: number, max: number) =>
     Math.min(max, Math.max(min, value));
 
-export const ApproachV2 = (_props: Props) => {
+export const Approach = () => {
     const t = useTranslations("approach");
     const text = t("sectionText");
 
@@ -25,8 +21,7 @@ export const ApproachV2 = (_props: Props) => {
     const loadedRef = useRef(false);
 
     const [range, setRange] = useState({ start: 0, end: 1 });
-
-    const screenY = useScreenY();
+    const screenY = useAppState((state) => state.screenY);
 
     useEffect(() => {
         if (loadedRef.current) return;
@@ -83,8 +78,8 @@ export const ApproachV2 = (_props: Props) => {
                 (sectionEl.offsetHeight - viewportHeight) / viewportHeight
             );
 
-            const start = (1 + introUnits + workUnits + servicesUnits) + 0.2;
-            const end = (start + sectionUnits) - 0.35;
+            const start = (1 + introUnits + workUnits + servicesUnits) + 0.25;
+            const end = (start + sectionUnits) - 0.3;
 
             setRange({ start, end });
         };
@@ -238,7 +233,7 @@ export const ApproachV2 = (_props: Props) => {
                             const isFirstWord = index === 0;
 
                             return (
-                                <span data-word key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-white" data-first={isFirstWord}>{word}</span>
+                                <span data-word key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-xl md:text-4xl tracking-wide text-white" data-first={isFirstWord}>{word}</span>
                             )
                         })}
                     </div>

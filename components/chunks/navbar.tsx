@@ -1,106 +1,140 @@
-"use client"
+"use client";
 
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { useApplicationState } from "@/providers/application-state";
-import { useEffect, useState } from "react";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useAppState } from "@/stores/app-state";
+import { useShallow } from "zustand/react/shallow";
 
-gsap.registerPlugin(ScrollToPlugin);
+export const Navbar = () => {
+    const { theme, locale } = useAppState(
+        useShallow((state) => ({
+            theme: state.theme,
+            locale: state.locale
+        }))
+    );
 
-type Props = {
-    locale: "pt" | "en";
-};
+    const t = useTranslations("navbar");
 
-export const Navbar = ({ locale }: Props) => {
-    const { dark } = useApplicationState();
-    const t = useTranslations('navbar');
     const [menuOpen, setMenuOpen] = useState(false);
     const [renderMenu, setRenderMenu] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [navbarVisible, setNavbarVisible] = useState(false);
 
-    // NAVBAR FADE IN
-    useGSAP(() => {
-        gsap.from("#navbar-content", {
-            opacity: 0,
-            duration: 1.5,
-            ease: "power2.out",
+    const openRaf1 = useRef<number | null>(null);
+    const openRaf2 = useRef<number | null>(null);
+
+    useEffect(() => {
+        const id = window.requestAnimationFrame(() => {
+            setNavbarVisible(true);
         });
+
+        return () => window.cancelAnimationFrame(id);
     }, []);
 
-    // MENU OPEN / CLOSE ANIMATION
     useEffect(() => {
         if (menuOpen) {
             setRenderMenu(true);
 
-            requestAnimationFrame(() => {
-                gsap.fromTo(
-                    ".menu-overlay",
-                    { opacity: 0 },
-                    {
-                        opacity: 1,
-                        duration: 0.25,
-                        ease: "power1.out",
-                    }
-                );
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.overflow = "hidden";
 
-                gsap.fromTo(
-                    ".menu-panel",
-                    { xPercent: 100 },
-                    {
-                        xPercent: 0,
-                        duration: 0.6,
-                        ease: "power3.out",
-                    }
-                );
-            });
-        } else if (renderMenu) {
-            gsap.to(".menu-panel", {
-                xPercent: 100,
-                duration: 0.4,
-                ease: "power3.in",
+            openRaf1.current = window.requestAnimationFrame(() => {
+                openRaf2.current = window.requestAnimationFrame(() => {
+                    setMenuVisible(true);
+                });
             });
 
-            gsap.to(".menu-overlay", {
-                opacity: 0,
-                duration: 0.25,
-                ease: "power1.in",
-                onComplete: () => setRenderMenu(false),
-            });
+            return;
         }
-    }, [menuOpen, renderMenu]);
 
-    const links = [
-        { name: t('intro'), href: "#intro" },
-        { name: t('recentProjects'), href: "#work" },
-        { name: t('services'), href: "#services" },
-        { name: t('approach'), href: "#approach" },
-        { name: t('getInTouch'), href: "#get-in-touch" },
-        { name: t('gallery'), href: "/work", external: true },
-    ];
+        setMenuVisible(false);
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+    }, [menuOpen]);
+
+    useEffect(() => {
+        return () => {
+            if (openRaf1.current) window.cancelAnimationFrame(openRaf1.current);
+            if (openRaf2.current) window.cancelAnimationFrame(openRaf2.current);
+
+            document.documentElement.style.overflow = "";
+            document.body.style.overflow = "";
+        };
+    }, []);
+
+    const links = useMemo(
+        () => [
+            { name: t("intro"), href: "#intro" },
+            { name: t("recentProjects"), href: "#work" },
+            { name: t("services"), href: "#services" },
+            { name: t("approach"), href: "#approach" },
+            { name: t("getInTouch"), href: "#get-in-touch" },
+            { name: t("gallery"), href: "/work", external: true },
+        ],
+        [t]
+    );
+
+    const openMenu = () => setMenuOpen(true);
+    const closeMenu = () => setMenuOpen(false);
 
     const moveScreenUp = () => {
         window.scrollTo({
             top: 0,
             behavior: "smooth",
         });
-    }
+    };
+
+    const handleAnchorClick = (href: string) => {
+        closeMenu();
+
+        const id = href.replace("#", "");
+        const element = document.getElementById(id);
+
+        if (!element) return;
+
+        window.setTimeout(() => {
+            element.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }, 180);
+    };
 
     return (
         <>
             {renderMenu && (
                 <div
-                    className="menu-overlay fixed inset-0 z-999 bg-black/30 backdrop-blur-sm flex justify-end"
-                    onClick={() => setMenuOpen(false)}
+                    className={[
+                        "fixed inset-0 z-999 flex justify-end",
+                        "bg-black/30 backdrop-blur-sm",
+                        "transition-opacity duration-300 ease-out",
+                        menuVisible ? "opacity-100" : "opacity-0",
+                    ].join(" ")}
+                    onClick={closeMenu}
+                    onTransitionEnd={(e) => {
+                        if (e.target !== e.currentTarget) return;
+                        if (!menuVisible) setRenderMenu(false);
+                    }}
+                    aria-hidden={!menuOpen}
                 >
                     <div
-                        className="menu-panel w-[80%] md:w-[60%] lg:w-[40%] bg-[#eee] h-full flex flex-col items-center justify-center relative"
+                        className={[
+                            "w-[80%] md:w-[60%] lg:w-[40%] h-full",
+                            "bg-[#eee] flex flex-col items-center justify-center relative",
+                            "translate-x-full",
+                            "transform-gpu will-change-transform",
+                            "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                            menuVisible ? "translate-x-0!" : "",
+                        ].join(" ")}
                         onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
                     >
                         <button
-                            onClick={() => setMenuOpen(false)}
+                            onClick={closeMenu}
                             className="absolute top-5 right-5"
+                            aria-label="Close menu"
                         >
                             <svg
                                 className="w-8 h-8"
@@ -117,8 +151,9 @@ export const Navbar = ({ locale }: Props) => {
                         <div className="flex flex-col mr-auto px-12 gap-12">
                             <img
                                 src="/logo.png"
-                                className="w-20 filter brightness-0"
+                                className="w-20 filter brightness-0 data-[dark=false]:invert transition"
                                 alt="Logo"
+                                data-dark={theme === 'dark'}
                             />
 
                             <div className="flex flex-col gap-2">
@@ -128,32 +163,27 @@ export const Navbar = ({ locale }: Props) => {
                                             <a
                                                 key={link.name}
                                                 href={link.href}
-                                                className="uppercase text-2xl font-semibold hover:text-[#C55BF9] transition"
+                                                className="uppercase text-2xl font-semibold hover:text-[#C55BF9] transition-colors duration-200"
+                                                onClick={closeMenu}
                                             >
                                                 {link.name}
                                             </a>
-                                        )
+                                        );
                                     }
 
                                     return (
                                         <a
                                             key={link.name}
                                             href={link.href}
-                                            className="uppercase text-2xl font-semibold hover:text-[#C55BF9] transition"
+                                            className="uppercase text-2xl font-semibold hover:text-[#C55BF9] transition-colors duration-200"
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                setMenuOpen(false);
-
-                                                gsap.to(window, {
-                                                    duration: 1,
-                                                    ease: "power3.inOut",
-                                                    scrollTo: link.href,
-                                                });
+                                                handleAnchorClick(link.href);
                                             }}
                                         >
                                             {link.name}
                                         </a>
-                                    )
+                                    );
                                 })}
                             </div>
 
@@ -220,30 +250,42 @@ export const Navbar = ({ locale }: Props) => {
             <div className="fixed w-full z-50">
                 <div
                     id="navbar-content"
-                    className="w-full flex justify-between items-center p-6 bg-transparent data-[dark=true]:bg-[#eee]"
-                    data-dark={dark}
+                    className={[
+                        "w-full flex justify-between items-center p-6 bg-transparent",
+                        "transition-opacity duration-700 ease-out will-change-[opacity]",
+                        navbarVisible ? "opacity-100" : "opacity-0",
+                        theme === 'dark' ? "bg-[#eee]!" : "",
+                    ].join(" ")}
                 >
                     <button
                         className="m-0 p-0 cursor-pointer bg-transparent"
-                        onClick={() => moveScreenUp()}
+                        onClick={moveScreenUp}
                     >
                         <img
                             src="/logo.png"
                             className="w-20 filter brightness-0 data-[dark=false]:invert transition"
                             alt="Logo"
-                            data-dark={dark}
+                            data-dark={theme === 'dark'}
                         />
                     </button>
 
                     <div className="flex items-center gap-6">
-                        <LocaleSwitcher locale={locale} dark={dark} />
+                        <LocaleSwitcher locale={locale} dark={theme === 'dark'} />
 
                         <button
                             className="flex flex-col gap-2 group cursor-pointer"
-                            onClick={() => setMenuOpen(true)}
+                            onClick={openMenu}
+                            aria-label="Open menu"
+                            aria-expanded={menuOpen}
                         >
-                            <div className="w-6 h-1 bg-[#eee] data-[dark=true]:bg-black group-hover:bg-[#C55BF9] data-[dark=true]:group-hover:bg-[#C55BF9] transition-colors duration-200 ease-in-out" data-dark={dark} />
-                            <div className="w-6 h-1 bg-[#eee] data-[dark=true]:bg-black group-hover:bg-[#C55BF9] data-[dark=true]:group-hover:bg-[#C55BF9] transition-colors duration-200 ease-in-out" data-dark={dark} />
+                            <div
+                                className="w-6 h-1 transition-colors duration-200 ease-in-out"
+                                style={{ backgroundColor: theme === 'dark' ? "#000" : "#eee" }}
+                            />
+                            <div
+                                className="w-6 h-1 transition-colors duration-200 ease-in-out"
+                                style={{ backgroundColor: theme === 'dark' ? "#000" : "#eee" }}
+                            />
                         </button>
                     </div>
                 </div>

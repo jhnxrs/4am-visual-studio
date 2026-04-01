@@ -2,14 +2,21 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { useApplicationState } from "@/providers/application-state";
+import { useAppState } from "@/stores/app-state";
+import { useShallow } from "zustand/react/shallow";
 
 type Props = {
     children: React.ReactNode;
 };
 
-export const FullscreenProvider = ({ children }: Props) => {
-    const { fullscreenUrl, setFullscreenUrl } = useApplicationState();
+export const FullscreenProvider = (props: Props) => {
+    const { fullscreenUrl, setFullscreenUrl } = useAppState(
+        useShallow((state) => ({
+            fullscreenUrl: state.fullscreenUrl,
+            setFullscreenUrl: state.setFullscreenUrl
+        }))
+    );
+
     const isVideo = fullscreenUrl?.includes('mp4');
 
     useEffect(() => {
@@ -29,17 +36,17 @@ export const FullscreenProvider = ({ children }: Props) => {
 
     return (
         <>
-            {children}
+            {props.children}
 
             {fullscreenUrl && (
                 <div className="fixed inset-0 z-9000 flex items-center justify-center">
                     <div
                         className="absolute inset-0 bg-black/70 backdrop-blur-md"
-                        onClick={() => setFullscreenUrl(undefined)}
+                        onClick={() => setFullscreenUrl(null)}
                     />
 
                     <button
-                        onClick={() => setFullscreenUrl(undefined)}
+                        onClick={() => setFullscreenUrl(null)}
                         className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center text-xl hover:bg-black/90 transition"
                         aria-label="Close fullscreen"
                     >

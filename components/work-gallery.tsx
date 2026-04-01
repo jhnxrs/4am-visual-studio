@@ -6,10 +6,10 @@ import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { workImages } from "@/lib/images";
 import Image from "next/image";
-import { useApplicationState } from "@/providers/application-state";
+import { useAppState } from "@/stores/app-state";
 
 export const WorkGallery = () => {
-    const { setFullscreenUrl } = useApplicationState();
+    const setFullscreenUrl = useAppState((state) => state.setFullscreenUrl);
     const t = useTranslations();
     const text = t("workPageTitle");
 

@@ -1,19 +1,18 @@
 "use client"
 
-import { useApplicationState } from "@/providers/application-state";
-import { useScreenY } from "@/providers/scroll-provider"
+import { useAppState } from "@/stores/app-state";
 import { useEffect, useMemo } from "react";
 
-export const HeroV2 = () => {
-    const { setDark } = useApplicationState();
-    const screenY = useScreenY();
+export const Hero = () => {
+    const setTheme = useAppState((state) => state.setTheme);
+    const screenY = useAppState((state) => state.screenY);
 
     const shouldTransform = useMemo(() => {
-        return screenY > 0.7;
+        return screenY > 0.6;
     }, [screenY]);
 
     useEffect(() => {
-        setDark(shouldTransform);
+        setTheme(shouldTransform ? 'dark' : 'light');
     }, [shouldTransform]);
 
     return (

@@ -1,15 +1,11 @@
 "use client";
 
 import { HoverVideo } from "@/components/hover-video";
-import { useApplicationState } from "@/providers/application-state";
-import { useScreenY } from "@/providers/scroll-provider";
+import { useAppState } from "@/stores/app-state";
 import { useTranslations } from "next-intl";
 import NextImage from "next/image";
 import { useEffect, useRef, useState } from "react";
-
-type Props = {
-    locale: "pt" | "en";
-};
+import { useShallow } from "zustand/react/shallow";
 
 const TOTAL_FRAMES = 60;
 
@@ -56,7 +52,7 @@ const MediaBlock = (props: MediaBlockProps) => {
     return (
         <div
             ref={ref}
-            className={`w-full relative ${props.aspect} overflow-hidden rounded-2xl transition-all duration-700 ease-out will-change-transform ${isVisible
+            className={`w-full relative ${props.aspect} overflow-hidden rounded-sm transition-all duration-700 ease-out will-change-transform ${isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-6"
                 }`}
@@ -79,8 +75,14 @@ const MediaBlock = (props: MediaBlockProps) => {
     );
 };
 
-export const WorkV2 = (_props: Props) => {
-    const { setFullscreenUrl, isMobile } = useApplicationState();
+export const Work = () => {
+    const { screenY, mobile, setFullscreenUrl } = useAppState(
+        useShallow((state) => ({
+            screenY: state.screenY,
+            mobile: state.mobile,
+            setFullscreenUrl: state.setFullscreenUrl,
+        }))
+    );
     const t = useTranslations("work");
     const text = t("sectionText");
 
@@ -90,8 +92,6 @@ export const WorkV2 = (_props: Props) => {
     const loadedRef = useRef(false);
 
     const [range, setRange] = useState({ start: 0, end: 1 });
-
-    const screenY = useScreenY();
 
     useEffect(() => {
         if (loadedRef.current) return;
@@ -243,8 +243,8 @@ export const WorkV2 = (_props: Props) => {
                             />
 
                             <MediaBlock
-                                type={!mounted ? "image" : isMobile ? "image" : "hoverVideo"}
-                                src={!mounted ? "/work02.webp" : isMobile ? "/work02.webp" : "/work02-vid.mp4"}
+                                type={!mounted ? "image" : mobile ? "image" : "hoverVideo"}
+                                src={!mounted ? "/work02.webp" : mobile ? "/work02.webp" : "/work02-vid.mp4"}
                                 aspect="aspect-[4/3] md:aspect-[3/4]"
                                 onClickImage={() => setFullscreenUrl("/work02.webp")}
                             />
@@ -282,15 +282,15 @@ export const WorkV2 = (_props: Props) => {
                             />
 
                             <MediaBlock
-                                type={!mounted ? "image" : isMobile ? "image" : "hoverVideo"}
-                                src={!mounted ? "/work07.webp" : isMobile ? "/work07.webp" : "/work07-vid.mp4"}
-                                aspect="aspect-[4/3] md:aspect-[3/4]"
+                                type={!mounted ? "image" : mobile ? "image" : "hoverVideo"}
+                                src={!mounted ? "/work07.webp" : mobile ? "/work07.webp" : "/work07-vid.mp4"}
+                                aspect=""
                                 onClickImage={() => setFullscreenUrl("/work07.webp")}
                             />
 
                             <a
                                 href="/work"
-                                className="px-6 group hover:bg-[#C55BF9] hover:border-[#C55BF9] hover:text-black text-white transition-all duration-200 py-2 rounded-full font-medium border border-white w-fit flex flex-row items-center gap-6"
+                                className="md:mt-6 px-6 group hover:bg-[#C55BF9] hover:border-[#C55BF9] hover:text-black text-white transition-all duration-200 py-2 rounded-full font-medium border border-white w-fit flex flex-row items-center gap-6"
                             >
                                 {t("exploreMore")}
                                 <div className="bg-white p-2 group-hover:bg-black group-hover:text-white transition-all duration-200 rounded-full text-black">

@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { useApplicationState } from "@/providers/application-state";
 import { useTranslations } from "next-intl";
+import { useAppState } from "@/stores/app-state";
 
 export const CustomCursor = () => {
+    const isMobile = useAppState((state) => state.mobile);
     const t = useTranslations();
-    const cursorRef = useRef<HTMLDivElement>(null);
-    const { isMobile } = useApplicationState();
 
+    const cursorRef = useRef<HTMLDivElement>(null);
     const mouse = useRef({ x: 0, y: 0 });
     const pos = useRef({ x: 0, y: 0 });
+    const rafRef = useRef<number | null>(null);
 
     const [isMediaHover, setIsMediaHover] = useState(false);
 
@@ -19,10 +19,8 @@ export const CustomCursor = () => {
         const cursor = cursorRef.current;
         if (!cursor) return;
 
-        gsap.set(cursor, {
-            xPercent: -50,
-            yPercent: -50,
-        });
+        // center cursor
+        cursor.style.transform = "translate(-50%, -50%)";
 
         const onMouseMove = (e: MouseEvent) => {
             mouse.current.x = e.clientX;
@@ -38,31 +36,27 @@ export const CustomCursor = () => {
         window.addEventListener("mousemove", onMouseMove);
 
         const tick = () => {
+            // lerp
             pos.current.x += (mouse.current.x - pos.current.x) * 0.15;
             pos.current.y += (mouse.current.y - pos.current.y) * 0.15;
 
-            gsap.set(cursor, {
-                x: pos.current.x,
-                y: pos.current.y,
-            });
+            if (cursor) {
+                cursor.style.transform = `
+                    translate(-50%, -50%)
+                    translate(${pos.current.x}px, ${pos.current.y}px)
+                    scale(${isMediaHover ? 1.8 : 1})
+                `;
+            }
+
+            rafRef.current = requestAnimationFrame(tick);
         };
 
-        gsap.ticker.add(tick);
+        rafRef.current = requestAnimationFrame(tick);
 
         return () => {
             window.removeEventListener("mousemove", onMouseMove);
-            gsap.ticker.remove(tick);
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, []);
-
-    useEffect(() => {
-        if (!cursorRef.current) return;
-
-        gsap.to(cursorRef.current, {
-            scale: isMediaHover ? 1.8 : 1,
-            duration: 1,
-            ease: "power3.out",
-        });
     }, [isMediaHover]);
 
     if (isMobile) return null;
@@ -72,7 +66,7 @@ export const CustomCursor = () => {
             ref={cursorRef}
             className={`custom-cursor ${isMediaHover ? "is-media" : ""}`}
         >
-            {isMediaHover && <span>{t('view')}</span>}
+            {isMediaHover && <span>{t("view")}</span>}
         </div>
     );
 };
