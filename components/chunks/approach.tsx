@@ -1,8 +1,11 @@
 "use client";
 
+import { useEnteredView } from "@/hooks/use-entered-view";
 import { useAppState } from "@/stores/app-state";
+import NextImage from "next/image";
 import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 const TOTAL_FRAMES = 60;
 
@@ -13,17 +16,22 @@ export const Approach = () => {
     const t = useTranslations("approach");
     const text = t("sectionText");
 
-    const wordsRef = useRef<HTMLDivElement>(null);
-
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const sectionRef = useRef<HTMLElement>(null);
+    const { ref: sectionRef, entered: sectionEntered } = useEnteredView<HTMLElement>();
+    const wordsRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<HTMLImageElement[]>([]);
     const loadedRef = useRef(false);
 
     const [range, setRange] = useState({ start: 0, end: 1 });
-    const screenY = useAppState((state) => state.screenY);
+    const { mobile, screenY } = useAppState(
+        useShallow((state) => ({
+            mobile: state.mobile,
+            screenY: state.screenY,
+        }))
+    );
 
     useEffect(() => {
+        if (mobile) return;
         if (loadedRef.current) return;
         loadedRef.current = true;
 
@@ -36,7 +44,7 @@ export const Approach = () => {
         }
 
         imagesRef.current = images;
-    }, []);
+    }, [mobile]);
 
     useLayoutEffect(() => {
         const root = wordsRef.current;
@@ -99,9 +107,11 @@ export const Approach = () => {
             resizeObserver.disconnect();
             window.removeEventListener("resize", calculateRange);
         };
-    }, []);
+    }, [sectionRef]);
 
     useEffect(() => {
+        if (mobile) return;
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -150,9 +160,11 @@ export const Approach = () => {
         }
 
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }, [screenY, range]);
+    }, [mobile, screenY, range]);
 
     useEffect(() => {
+        if (mobile) return;
+
         const root = wordsRef.current;
         if (!root) return;
 
@@ -166,14 +178,14 @@ export const Approach = () => {
 
         const hideAll = () => {
             for (const el of wordEls) {
-                el.style.transform = `translate3d(0, ${hiddenY}px, 0)`;
+                el.style.transform = `translateY(${hiddenY}px)`;
                 el.style.opacity = "0";
             }
         };
 
         const showAll = () => {
             for (const el of wordEls) {
-                el.style.transform = "translate3d(0, 0, 0)";
+                el.style.transform = "translateY(0)";
                 el.style.opacity = "1";
             }
         };
@@ -209,18 +221,28 @@ export const Approach = () => {
 
             const eased = 1 - Math.pow(1 - wordProgress, 3);
 
-            el.style.transform = `translate3d(0, ${hiddenY * (1 - eased)}px, 0)`;
+            el.style.transform = `translateY(${hiddenY * (1 - eased)}px)`;
             el.style.opacity = `${eased}`;
         }
-    }, [screenY, text, range]);
+    }, [mobile, screenY, text, range]);
 
     return (
         <section ref={sectionRef} className="relative" id="work">
             <div className="sticky top-0 h-screen w-screen overflow-hidden">
-                <canvas
-                    ref={canvasRef}
-                    className="absolute inset-0 h-full w-full"
-                />
+                {mobile ? (
+                    <NextImage
+                        src="/asset2/frame_0030.webp"
+                        alt=""
+                        fill
+                        sizes="100vw"
+                        className="object-cover"
+                    />
+                ) : (
+                    <canvas
+                        ref={canvasRef}
+                        className="absolute inset-0 h-full w-full"
+                    />
+                )}
 
                 <div className="absolute inset-0 bg-linear-to-br from-[#09122e] to-black pointer-events-none z-5 opacity-60" />
             </div>
@@ -233,7 +255,32 @@ export const Approach = () => {
                             const isFirstWord = index === 0;
 
                             return (
-                                <span data-word key={index} className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-xl md:text-4xl tracking-wide text-white" data-first={isFirstWord}>{word}</span>
+                                <span
+                                    data-word
+                                    key={index}
+                                    className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-xl md:text-4xl tracking-wide text-white"
+                                    data-first={isFirstWord}
+                                    style={
+                                        mobile
+                                            ? {
+                                                opacity: sectionEntered ? 1 : 0,
+                                                transform: `translateY(${sectionEntered ? 0 : 18}px)`,
+                                                transitionProperty: "opacity, transform",
+                                                transitionDuration: "700ms",
+                                                transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                                                transitionDelay: `${Math.min(index * 45, 320)}ms`,
+                                                willChange: sectionEntered ? undefined : "opacity, transform",
+                                                backfaceVisibility: "hidden",
+                                                WebkitBackfaceVisibility: "hidden",
+                                            }
+                                            : {
+                                                backfaceVisibility: "hidden",
+                                                WebkitBackfaceVisibility: "hidden",
+                                            }
+                                    }
+                                >
+                                    {word}
+                                </span>
                             )
                         })}
                     </div>

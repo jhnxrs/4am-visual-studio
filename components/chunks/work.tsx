@@ -94,6 +94,7 @@ export const Work = () => {
     const [range, setRange] = useState({ start: 0, end: 1 });
 
     useEffect(() => {
+        if (mobile) return;
         if (loadedRef.current) return;
         loadedRef.current = true;
 
@@ -106,7 +107,7 @@ export const Work = () => {
         }
 
         imagesRef.current = images;
-    }, []);
+    }, [mobile]);
 
     useEffect(() => {
         const introEl = document.getElementById("intro");
@@ -146,6 +147,8 @@ export const Work = () => {
     }, []);
 
     useEffect(() => {
+        if (mobile) return;
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -194,21 +197,36 @@ export const Work = () => {
         }
 
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }, [screenY, range]);
+    }, [mobile, screenY, range]);
 
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
+        const id = window.requestAnimationFrame(() => {
+            setMounted(true);
+        });
+
+        return () => window.cancelAnimationFrame(id);
     }, []);
 
     return (
         <section ref={sectionRef} className="relative" id="work">
             <div className="sticky top-0 h-screen w-screen overflow-hidden">
-                <canvas
-                    ref={canvasRef}
-                    className="absolute inset-0 h-full w-full"
-                />
+                {mobile ? (
+                    <NextImage
+                        src="/asset1/frame_0030.webp"
+                        alt=""
+                        fill
+                        priority
+                        sizes="100vw"
+                        className="object-cover"
+                    />
+                ) : (
+                    <canvas
+                        ref={canvasRef}
+                        className="absolute inset-0 h-full w-full"
+                    />
+                )}
 
                 <div className="absolute inset-0 bg-linear-to-br from-[#09122e] to-black pointer-events-none z-5 opacity-60" />
             </div>

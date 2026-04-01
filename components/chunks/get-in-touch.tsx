@@ -133,7 +133,11 @@ export const GetInTouch = () => {
         if (justLeft) {
             cancelAnimation();
             animationStartRef.current = null;
-            setBaseProgress(0);
+            window.requestAnimationFrame(() => {
+                if (mountedRef.current) {
+                    setBaseProgress(0);
+                }
+            });
         }
 
         wasAboveStartRef.current = isAboveStart;
@@ -170,7 +174,7 @@ export const GetInTouch = () => {
 
             const eased = 1 - Math.pow(1 - wordProgress, 3);
 
-            el.style.transform = `translate3d(0, ${hiddenWordY * (1 - eased)}px, 0)`;
+            el.style.transform = `translateY(${hiddenWordY * (1 - eased)}px)`;
             el.style.opacity = `${eased}`;
         }
 
@@ -182,7 +186,7 @@ export const GetInTouch = () => {
         );
         const contactEased = 1 - Math.pow(1 - contactProgress, 3);
 
-        contact.style.transform = `translate3d(0, ${hiddenContactY * (1 - contactEased)}px, 0)`;
+        contact.style.transform = `translateY(${hiddenContactY * (1 - contactEased)}px)`;
         contact.style.opacity = `${contactEased}`;
     }, [baseProgress, text]);
 
@@ -214,8 +218,10 @@ export const GetInTouch = () => {
                             className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-black"
                             style={{
                                 opacity: 0,
-                                transform: "translate3d(0, 18px, 0)",
+                                transform: "translateY(18px)",
                                 willChange: "transform, opacity",
+                                backfaceVisibility: "hidden",
+                                WebkitBackfaceVisibility: "hidden",
                             }}
                         >
                             {word}
@@ -229,7 +235,7 @@ export const GetInTouch = () => {
                 className="flex flex-col md:flex-row md:items-center gap-6 mt-6 md:flex-wrap"
                 style={{
                     opacity: 0,
-                    transform: "translate3d(0, 20px, 0)",
+                    transform: "translateY(20px)",
                     willChange: "transform, opacity",
                 }}
             >

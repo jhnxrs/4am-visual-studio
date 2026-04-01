@@ -1,5 +1,6 @@
 "use client";
 
+import { useEnteredView } from "@/hooks/use-entered-view";
 import { useTranslations } from "next-intl";
 import {
     useEffect,
@@ -11,18 +12,24 @@ import {
 import Image from "next/image";
 import { useAppState } from "@/stores/app-state";
 import { clamp } from "@/lib/utilities";
+import { useShallow } from "zustand/react/shallow";
 
 export const Services = () => {
     const t = useTranslations('services');
     const text = t("sectionText");
 
-    const screenY = useAppState((state) => state.screenY);
+    const { mobile, screenY } = useAppState(
+        useShallow((state) => ({
+            mobile: state.mobile,
+            screenY: state.screenY,
+        }))
+    );
 
     const shouldStartRendering = useMemo(() => {
         return screenY > 0.7;
     }, [screenY]);
 
-    const sectionRef = useRef<HTMLElement>(null);
+    const { ref: sectionRef, entered: sectionEntered } = useEnteredView<HTMLElement>();
     const wordsRef = useRef<HTMLDivElement>(null);
 
     const words = useMemo(() => text.split(" "), [text]);
@@ -53,6 +60,19 @@ export const Services = () => {
     ];
 
     const getCardStyle = (index: number) => {
+        if (mobile) {
+            const entered = sectionEntered;
+
+            return {
+                opacity: entered ? 1 : 0,
+                transform: `translateY(${entered ? 0 : 24}px)`,
+                transitionProperty: "opacity, transform",
+                transitionDuration: "700ms",
+                transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                transitionDelay: `${160 + index * 80}ms`,
+            };
+        }
+
         const cardStart = range.start + index * 0.1;
         const cardDuration = 0.18;
 
@@ -66,7 +86,7 @@ export const Services = () => {
 
         return {
             opacity: eased,
-            transform: `translate3d(0, ${24 * (1 - eased)}px, 0)`,
+            transform: `translateY(${24 * (1 - eased)}px)`,
             willChange: shouldStartRendering ? "transform, opacity" as const : undefined,
         };
     };
@@ -120,7 +140,7 @@ export const Services = () => {
             resizeObserver.disconnect();
             window.removeEventListener("resize", calculateRange);
         };
-    }, []);
+    }, [sectionRef]);
 
     useLayoutEffect(() => {
         const root = wordsRef.current;
@@ -143,6 +163,8 @@ export const Services = () => {
     }, [text]);
 
     useEffect(() => {
+        if (mobile) return;
+
         const root = wordsRef.current;
         if (!root) return;
 
@@ -156,14 +178,14 @@ export const Services = () => {
 
         const hideAll = () => {
             for (const el of wordEls) {
-                el.style.transform = `translate3d(0, ${hiddenY}px, 0)`;
+                el.style.transform = `translateY(${hiddenY}px)`;
                 el.style.opacity = "0";
             }
         };
 
         const showAll = () => {
             for (const el of wordEls) {
-                el.style.transform = "translate3d(0, 0, 0)";
+                el.style.transform = "translateY(0)";
                 el.style.opacity = "1";
             }
         };
@@ -199,10 +221,10 @@ export const Services = () => {
 
             const eased = 1 - Math.pow(1 - wordProgress, 3);
 
-            el.style.transform = `translate3d(0, ${hiddenY * (1 - eased)}px, 0)`;
+            el.style.transform = `translateY(${hiddenY * (1 - eased)}px)`;
             el.style.opacity = `${eased}`;
         }
-    }, [screenY, text, range]);
+    }, [mobile, screenY, text, range]);
 
     return (
         <section
@@ -232,15 +254,31 @@ export const Services = () => {
                             data-first={isFirstWord}
                             className="text-nowrap data-[first=true]:ml-[calc(var(--label-w)+1.5rem)] text-2xl md:text-4xl tracking-wide text-black"
                             style={
-                                shouldStartRendering
+                                mobile
+                                    ? {
+                                        opacity: sectionEntered ? 1 : 0,
+                                        transform: `translateY(${sectionEntered ? 0 : 18}px)`,
+                                        transitionProperty: "opacity, transform",
+                                        transitionDuration: "700ms",
+                                        transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                                        transitionDelay: `${Math.min(index * 45, 320)}ms`,
+                                        willChange: sectionEntered ? undefined : "opacity, transform",
+                                        backfaceVisibility: "hidden",
+                                        WebkitBackfaceVisibility: "hidden",
+                                    }
+                                    : shouldStartRendering
                                     ? {
                                         opacity: 0,
-                                        transform: "translate3d(0, 24px, 0)",
+                                        transform: "translateY(24px)",
                                         willChange: "transform, opacity",
+                                        backfaceVisibility: "hidden",
+                                        WebkitBackfaceVisibility: "hidden",
                                     }
                                     : {
                                         opacity: 0,
-                                        transform: "translate3d(0, 24px, 0)",
+                                        transform: "translateY(24px)",
+                                        backfaceVisibility: "hidden",
+                                        WebkitBackfaceVisibility: "hidden",
                                     }
                             }
                         >
