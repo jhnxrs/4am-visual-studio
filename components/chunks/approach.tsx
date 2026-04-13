@@ -1,13 +1,12 @@
 "use client";
 
 import { useEnteredView } from "@/hooks/use-entered-view";
+import { setupScrollScrubVideo } from "@/lib/scroll-scrub-video";
 import { useAppState } from "@/stores/app-state";
 import NextImage from "next/image";
 import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-
-const TOTAL_FRAMES = 60;
 
 const clamp = (value: number, min: number, max: number) =>
     Math.min(max, Math.max(min, value));
@@ -16,11 +15,9 @@ export const Approach = () => {
     const t = useTranslations("approach");
     const text = t("sectionText");
 
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const { ref: sectionRef, entered: sectionEntered } = useEnteredView<HTMLElement>();
     const wordsRef = useRef<HTMLDivElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
-    const loadedRef = useRef(false);
 
     const [range, setRange] = useState({ start: 0, end: 1 });
     const { mobile, screenY } = useAppState(
@@ -32,19 +29,32 @@ export const Approach = () => {
 
     useEffect(() => {
         if (mobile) return;
-        if (loadedRef.current) return;
-        loadedRef.current = true;
 
-        const images: HTMLImageElement[] = [];
+        const section = sectionRef.current;
+        const video = videoRef.current;
+        if (!section || !video) return;
 
-        for (let i = 1; i <= TOTAL_FRAMES; i++) {
-            const img = new Image();
-            img.src = `/asset2/frame_${String(i).padStart(4, "0")}.webp`;
-            images.push(img);
+        let cleanup: (() => void) | undefined;
+
+        const setup = () => {
+            cleanup?.();
+            cleanup = setupScrollScrubVideo({
+                section,
+                video,
+            });
+        };
+
+        if (video.readyState >= 1) {
+            setup();
+        } else {
+            video.addEventListener("loadedmetadata", setup, { once: true });
         }
 
-        imagesRef.current = images;
-    }, [mobile]);
+        return () => {
+            video.removeEventListener("loadedmetadata", setup);
+            cleanup?.();
+        };
+    }, [mobile, sectionRef]);
 
     useLayoutEffect(() => {
         const root = wordsRef.current;
@@ -108,59 +118,6 @@ export const Approach = () => {
             window.removeEventListener("resize", calculateRange);
         };
     }, [sectionRef]);
-
-    useEffect(() => {
-        if (mobile) return;
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        const images = imagesRef.current;
-        if (!images.length) return;
-
-        const rawProgress = (screenY - range.start) / (range.end - range.start);
-        const progress = Math.max(0, Math.min(1, rawProgress));
-
-        const frameIndex = Math.floor(progress * (TOTAL_FRAMES - 1));
-        const img = images[frameIndex];
-
-        if (!img) return;
-
-        if (
-            canvas.width !== canvas.clientWidth ||
-            canvas.height !== canvas.clientHeight
-        ) {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        }
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const imgRatio = img.width / img.height;
-        const canvasRatio = canvas.width / canvas.height;
-
-        let drawWidth: number;
-        let drawHeight: number;
-        let offsetX: number;
-        let offsetY: number;
-
-        if (imgRatio > canvasRatio) {
-            drawHeight = canvas.height;
-            drawWidth = drawHeight * imgRatio;
-            offsetX = (canvas.width - drawWidth) / 2;
-            offsetY = 0;
-        } else {
-            drawWidth = canvas.width;
-            drawHeight = drawWidth / imgRatio;
-            offsetX = 0;
-            offsetY = (canvas.height - drawHeight) / 2;
-        }
-
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }, [mobile, screenY, range]);
 
     useEffect(() => {
         if (mobile) return;
@@ -238,9 +195,13 @@ export const Approach = () => {
                         className="object-cover"
                     />
                 ) : (
-                    <canvas
-                        ref={canvasRef}
-                        className="absolute inset-0 h-full w-full"
+                    <video
+                        ref={videoRef}
+                        src="/asset2.mp4"
+                        muted
+                        playsInline
+                        preload="auto"
+                        className="absolute inset-0 h-full w-full object-cover"
                     />
                 )}
 

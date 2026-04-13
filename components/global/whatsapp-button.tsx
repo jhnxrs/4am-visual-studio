@@ -5,7 +5,7 @@ export const WhatsappButton = async () => {
 
     return (
         <a
-            className="cursor-pointer hover:opacity-80 transition-all duration-200 fixed bottom-4 right-4 z-50 p-2 rounded-full bg-green-800"
+            className="cursor-pointer hover:opacity-80 transition-all duration-200 fixed bottom-4 right-4 z-50 p-2 rounded-full bg-[#C55BF9]"
             href={locale === 'en' ? `https://wa.me/5551991691225?text=Hey,%20how%20are%20you%20doing?%20I'd%20like%20to%20talk.` : `https://wa.me/5551991691225?text=Ol%C3%A1,%20tudo%20bem?%20Gostaria%20de%20conversar.`}
             target="_blank"
         >

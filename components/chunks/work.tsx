@@ -1,13 +1,12 @@
 "use client";
 
 import { HoverVideo } from "@/components/hover-video";
+import { setupScrollScrubVideo } from "@/lib/scroll-scrub-video";
 import { useAppState } from "@/stores/app-state";
 import { useTranslations } from "next-intl";
 import NextImage from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-
-const TOTAL_FRAMES = 60;
 
 type MediaBlockProps = {
     type: "image" | "hoverVideo";
@@ -76,9 +75,8 @@ const MediaBlock = (props: MediaBlockProps) => {
 };
 
 export const Work = () => {
-    const { screenY, mobile, setFullscreenUrl } = useAppState(
+    const { mobile, setFullscreenUrl } = useAppState(
         useShallow((state) => ({
-            screenY: state.screenY,
             mobile: state.mobile,
             setFullscreenUrl: state.setFullscreenUrl,
         }))
@@ -86,118 +84,36 @@ export const Work = () => {
     const t = useTranslations("work");
     const text = t("sectionText");
 
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
-    const loadedRef = useRef(false);
-
-    const [range, setRange] = useState({ start: 0, end: 1 });
-
     useEffect(() => {
         if (mobile) return;
-        if (loadedRef.current) return;
-        loadedRef.current = true;
 
-        const images: HTMLImageElement[] = [];
+        const section = sectionRef.current;
+        const video = videoRef.current;
+        if (!section || !video) return;
 
-        for (let i = 1; i <= TOTAL_FRAMES; i++) {
-            const img = new Image();
-            img.src = `/asset1/frame_${String(i).padStart(4, "0")}.webp`;
-            images.push(img);
-        }
+        let cleanup: (() => void) | undefined;
 
-        imagesRef.current = images;
-    }, [mobile]);
-
-    useEffect(() => {
-        const introEl = document.getElementById("intro");
-        const workEl = sectionRef.current;
-        if (!introEl || !workEl) return;
-
-        const calculateRange = () => {
-            const viewportHeight = window.innerHeight || 1;
-
-            const introUnits = introEl.offsetHeight / viewportHeight;
-            const workUnits = Math.max(
-                0,
-                (workEl.offsetHeight - viewportHeight) / viewportHeight
-            );
-
-            const start = 1 + introUnits;
-            const end = start + workUnits;
-
-            setRange({ start, end });
+        const setup = () => {
+            cleanup?.();
+            cleanup = setupScrollScrubVideo({
+                section,
+                video,
+            });
         };
 
-        calculateRange();
-
-        const resizeObserver = new ResizeObserver(() => {
-            calculateRange();
-        });
-
-        resizeObserver.observe(introEl);
-        resizeObserver.observe(workEl);
-
-        window.addEventListener("resize", calculateRange);
+        if (video.readyState >= 1) {
+            setup();
+        } else {
+            video.addEventListener("loadedmetadata", setup, { once: true });
+        }
 
         return () => {
-            resizeObserver.disconnect();
-            window.removeEventListener("resize", calculateRange);
+            video.removeEventListener("loadedmetadata", setup);
+            cleanup?.();
         };
-    }, []);
-
-    useEffect(() => {
-        if (mobile) return;
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        const images = imagesRef.current;
-        if (!images.length) return;
-
-        const rawProgress = (screenY - range.start) / (range.end - range.start);
-        const progress = Math.max(0, Math.min(1, rawProgress));
-
-        const frameIndex = Math.floor(progress * (TOTAL_FRAMES - 1));
-        const img = images[frameIndex];
-
-        if (!img) return;
-
-        if (
-            canvas.width !== canvas.clientWidth ||
-            canvas.height !== canvas.clientHeight
-        ) {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        }
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const imgRatio = img.width / img.height;
-        const canvasRatio = canvas.width / canvas.height;
-
-        let drawWidth: number;
-        let drawHeight: number;
-        let offsetX: number;
-        let offsetY: number;
-
-        if (imgRatio > canvasRatio) {
-            drawHeight = canvas.height;
-            drawWidth = drawHeight * imgRatio;
-            offsetX = (canvas.width - drawWidth) / 2;
-            offsetY = 0;
-        } else {
-            drawWidth = canvas.width;
-            drawHeight = drawWidth / imgRatio;
-            offsetX = 0;
-            offsetY = (canvas.height - drawHeight) / 2;
-        }
-
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }, [mobile, screenY, range]);
+    }, [mobile]);
 
     const [mounted, setMounted] = useState(false);
 
@@ -222,9 +138,14 @@ export const Work = () => {
                         className="object-cover"
                     />
                 ) : (
-                    <canvas
-                        ref={canvasRef}
+                    <video
+                        ref={videoRef}
+                        src="/asset1.mp4"
+                        muted
+                        playsInline
+                        preload="auto"
                         className="absolute inset-0 h-full w-full"
+                        style={{ objectFit: "cover" }}
                     />
                 )}
 

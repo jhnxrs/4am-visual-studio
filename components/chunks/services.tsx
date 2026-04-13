@@ -38,16 +38,6 @@ export const Services = () => {
 
     const cards = [
         {
-            title: t("cards.0.title"),
-            description: t("cards.0.description"),
-            image: "/branding.webp",
-        },
-        {
-            title: t("cards.1.title"),
-            description: t("cards.1.description"),
-            image: "/design.webp",
-        },
-        {
             title: t("cards.2.title"),
             description: t("cards.2.description"),
             image: "/arch.webp",
@@ -56,6 +46,16 @@ export const Services = () => {
             title: t("cards.3.title"),
             description: t("cards.3.description"),
             image: "/media.webp",
+        },
+        {
+            title: t("cards.0.title"),
+            description: t("cards.0.description"),
+            image: "/branding.webp",
+        },
+        {
+            title: t("cards.1.title"),
+            description: t("cards.1.description"),
+            image: "/design.webp",
         },
     ];
 
@@ -267,19 +267,19 @@ export const Services = () => {
                                         WebkitBackfaceVisibility: "hidden",
                                     }
                                     : shouldStartRendering
-                                    ? {
-                                        opacity: 0,
-                                        transform: "translateY(24px)",
-                                        willChange: "transform, opacity",
-                                        backfaceVisibility: "hidden",
-                                        WebkitBackfaceVisibility: "hidden",
-                                    }
-                                    : {
-                                        opacity: 0,
-                                        transform: "translateY(24px)",
-                                        backfaceVisibility: "hidden",
-                                        WebkitBackfaceVisibility: "hidden",
-                                    }
+                                        ? {
+                                            opacity: 0,
+                                            transform: "translateY(24px)",
+                                            willChange: "transform, opacity",
+                                            backfaceVisibility: "hidden",
+                                            WebkitBackfaceVisibility: "hidden",
+                                        }
+                                        : {
+                                            opacity: 0,
+                                            transform: "translateY(24px)",
+                                            backfaceVisibility: "hidden",
+                                            WebkitBackfaceVisibility: "hidden",
+                                        }
                             }
                         >
                             {word}

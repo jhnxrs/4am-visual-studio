@@ -249,6 +249,11 @@ export const GetInTouch = () => {
                     <p className="font-medium">+55 51 991691225</p>
                 </div>
 
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                    <p className="text-black/60 font-light">{t("work")}</p>
+                    <p className="font-medium">jobs@4amvisualstudio.com.br</p>
+                </div>
+
                 <div className="flex flex-row items-center gap-3">
                     <a
                         className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
