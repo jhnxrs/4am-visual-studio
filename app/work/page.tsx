@@ -10,11 +10,13 @@ export default async function Page() {
     return (
         <div className="w-full min-h-dvh h-full p-6 flex flex-col">
             <div className="w-full flex flex-row items-center justify-between">
-                <img
-                    src="/logo.png"
-                    className="w-20 filter brightness-0"
-                    alt="Logo"
-                />
+                <a href="/">
+                    <img
+                        src="/logo.png"
+                        className="w-20 filter brightness-0"
+                        alt="Logo"
+                    />
+                </a>
 
                 <div className="flex flex-row items-center gap-6">
                     <div>

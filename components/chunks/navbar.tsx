@@ -153,7 +153,8 @@ export const Navbar = () => {
                                 src="/logo.png"
                                 className="w-20 filter brightness-0 data-[dark=false]:invert transition"
                                 alt="Logo"
-                                data-dark={theme === 'dark'}
+                                data-dark={true}
+                            // data-dark={theme === 'dark'}
                             />
 
                             <div className="flex flex-col gap-2">
