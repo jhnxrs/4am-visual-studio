@@ -130,7 +130,7 @@ export const Work = () => {
             <div className="sticky top-0 h-screen w-screen overflow-hidden">
                 {mobile ? (
                     <NextImage
-                        src="/asset1/frame_0030.webp"
+                        src="/asset1_img.jpg"
                         alt=""
                         fill
                         priority

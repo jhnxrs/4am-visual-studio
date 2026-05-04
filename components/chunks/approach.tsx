@@ -188,7 +188,7 @@ export const Approach = () => {
             <div className="sticky top-0 h-screen w-screen overflow-hidden">
                 {mobile ? (
                     <NextImage
-                        src="/asset2/frame_0030.webp"
+                        src="/asset2_img.jpg"
                         alt=""
                         fill
                         sizes="100vw"
